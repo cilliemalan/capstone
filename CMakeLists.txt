@@ -31,8 +31,8 @@ option(CAPSTONE_ARCHITECTURE_DEFAULT "Whether architectures are enabled by defau
 option(CAPSTONE_DEBUG "Whether to enable extra debug assertions" OFF)
 option(CAPSTONE_INSTALL "Generate install target" OFF)
 
-set(SUPPORTED_ARCHITECTURES ARM ARM64 M68K MIPS PPC SPARC SYSZ XCORE X86 TMS320C64X M680X EVM MOS65XX WASM BPF RISCV)
-set(SUPPORTED_ARCHITECTURE_LABELS ARM ARM64 M68K MIPS PowerPC Sparc SystemZ XCore x86 TMS320C64x M680x EVM MOS65XX WASM BPF RISCV)
+set(SUPPORTED_ARCHITECTURES ARM ARM64 M68K MIPS PPC SPARC SYSZ XCORE X86 TMS320C64X M680X EVM MOS65XX WASM BPF RISCV XTENSA)
+set(SUPPORTED_ARCHITECTURE_LABELS ARM ARM64 M68K MIPS PowerPC Sparc SystemZ XCore x86 TMS320C64x M680x EVM MOS65XX WASM BPF RISCV XTENSA)
 
 list(LENGTH SUPPORTED_ARCHITECTURES count)
 math(EXPR count "${count}-1")
@@ -123,6 +123,7 @@ set(HEADERS_COMMON
     include/capstone/mos65xx.h
     include/capstone/bpf.h
     include/capstone/riscv.h
+    include/capstone/xtensa.h
     include/capstone/platform.h
     )
 
@@ -505,6 +506,23 @@ if (CAPSTONE_RISCV_SUPPORT)
 	set(TEST_SOURCES ${TEST_SOURCES} test_riscv.c)
 endif ()
 
+if (CAPSTONE_XTENSA_SUPPORT)
+	add_definitions(-DCAPSTONE_HAS_XTENSA)
+	set(SOURCES_XTENSA
+		arch/Xtensa/XtensaDisassembler.c
+		arch/Xtensa/XtensaInstPrinter.c
+		arch/Xtensa/XtensaMapping.c
+		arch/Xtensa/XtensaModule.c
+	)
+	set(HEADERS_XTENSA
+	    	arch/Xtensa/XtensaDisassembler.h
+	    	arch/Xtensa/XtensaInstPrinter.h
+	    	arch/Xtensa/XtensaMapping.h
+	    	arch/Xtensa/XtensaModule.h
+	)
+	set(TEST_SOURCES ${TEST_SOURCES} test_xtensa.c)
+endif ()
+
 if (CAPSTONE_OSXKERNEL_SUPPORT)
     add_definitions(-DCAPSTONE_HAS_OSXKERNEL)
 endif ()
@@ -527,6 +545,7 @@ set(ALL_SOURCES
     ${SOURCES_MOS65XX}
     ${SOURCES_BPF}
     ${SOURCES_RISCV}
+    ${SOURCES_XTENSA}
     )
 
 set(ALL_HEADERS
@@ -548,6 +567,7 @@ set(ALL_HEADERS
     ${HEADERS_MOS65XX}
     ${HEADERS_BPF}
     ${HEADERS_RISCV}
+    ${HEADERS_XTENSA}
     )
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
@@ -632,6 +652,7 @@ source_group("Source\\WASM" FILES ${SOURCES_WASM})
 source_group("Source\\MOS65XX" FILES ${SOURCES_MOS65XX})
 source_group("Source\\BPF" FILES ${SOURCES_BPF})
 source_group("Source\\RISCV" FILES ${SOURCES_RISCV})
+source_group("Source\\Xtensa" FILES ${SOURCES_XTENSA})
 
 source_group("Include\\Common" FILES ${HEADERS_COMMON})
 source_group("Include\\Engine" FILES ${HEADERS_ENGINE})
@@ -651,6 +672,7 @@ source_group("Include\\WASM" FILES ${HEADERS_WASM})
 source_group("Include\\MOS65XX" FILES ${HEADERS_MOS65XX})
 source_group("Include\\BPF" FILES ${HEADERS_BPF})
 source_group("Include\\RISCV" FILES ${HEADERS_RISCV})
+source_group("Include\\Xtensa" FILES ${HEADERS_XTENSA})
 
 ### test library 64bit routine:
 include("GNUInstallDirs")

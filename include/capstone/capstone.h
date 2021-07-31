@@ -88,6 +88,7 @@ typedef enum cs_arch {
 	CS_ARCH_WASM,		///< WebAssembly architecture
 	CS_ARCH_BPF,		///< Berkeley Packet Filter architecture (including eBPF)
 	CS_ARCH_RISCV,          ///< RISCV architecture
+	CS_ARCH_XTENSA,     ///< Xtensa architecture
 	CS_ARCH_MAX,
 	CS_ARCH_ALL = 0xFFFF, // All architectures - for cs_support()
 } cs_arch;
@@ -280,6 +281,7 @@ typedef struct cs_opt_skipdata {
 	/// WASM:    1 bytes.
 	/// MOS65XX: 1 bytes.
 	/// BPF:     8 bytes.
+	/// Xtensa:  1 byte.
 	cs_skipdata_cb_t callback; 	// default value is NULL
 
 	/// User-defined data to be passed to @callback function pointer.
@@ -303,6 +305,7 @@ typedef struct cs_opt_skipdata {
 #include "wasm.h"
 #include "mos65xx.h"
 #include "bpf.h"
+#include "xtensa.h"
 
 /// NOTE: All information in cs_detail is only available when CS_OPT_DETAIL = CS_OPT_ON
 /// Initialized as memset(., 0, offsetof(cs_detail, ARCH)+sizeof(cs_ARCH))
@@ -337,6 +340,7 @@ typedef struct cs_detail {
 		cs_wasm wasm;	///< Web Assembly architecture
 		cs_bpf bpf;	///< Berkeley Packet Filter architecture (including eBPF)
 		cs_riscv riscv; ///< RISCV architecture
+		cs_xtensa xtensa; ///< Xtensa architecture
 	};
 } cs_detail;
 
