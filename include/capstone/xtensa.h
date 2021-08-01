@@ -49,7 +49,10 @@ typedef struct cs_xtensa {
 	cs_xtensa_op operands[4];
 
 	/// The movement, in bytes, of the register window (see 5.3.6 Windowed
-	/// Register Option Special Registers) of the ISA.
+	/// Register Option Special Registers) of the ISA. e.g. if
+	/// register_window_movement = 12 it means a12..a15 will be made a0..a3
+	/// when ENTRY is called. 
+	/// @remarks This is only set for CALL4/8/12 and CALLX4/8/12 instructions.
 	int8_t register_window_movement;
 } cs_xtensa;
 
