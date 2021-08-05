@@ -236,7 +236,7 @@ extern "C"
 		XTENSA_INSN_ADD_S,
 		XTENSA_INSN_ADDI,
 		XTENSA_INSN_MOVI,
-
+		XTENSA_INSN_MOVI_N,
 		XTENSA_INSN_NEG,
 	} xtensa_insn;
 

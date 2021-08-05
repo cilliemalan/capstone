@@ -115,24 +115,50 @@ void Xtensa_init(MCRegisterInfo *MRI)
 	//
 }
 
-int disassemble_internal(csh ud, const uint8_t *code, size_t code_len, xtensa_insn *pinsn, cs_xtensa *csn)
+static void add_register(cs_insn *csn, unsigned int regnr, uint8_t access)
 {
-#define REG(value, mode)                                       \
-	csn->operands[csn->op_count++] = (cs_xtensa_op)            \
-	{                                                          \
-		XTENSA_OP_REG, {.reg = XTENSA_REG_A0 + value}, mode, 4 \
-	}
-#define IMM(size, value, mode)                          \
-	csn->operands[csn->op_count++] = (cs_xtensa_op)     \
-	{                                                   \
-		XTENSA_OP_IMM, {.imm = value}, CS_AC_READ, size \
-	}
-#define REGR(value) REG(value, CS_AC_READ)
-#define REGW(value) REG(value, CS_AC_WRITE)
-#define IMMR(size, value) IMM(value, size, CS_AC_READ)
-#define IMMW(size, value) IMM(value, size, CS_AC_WRITE)
+	if (csn->detail)
+	{
+		int c = csn->detail->xtensa.op_count++;
+		csn->detail->xtensa.operands[c].type = XTENSA_OP_REG;
+		csn->detail->xtensa.operands[c].reg = XTENSA_REG_A0 + regnr;
+		csn->detail->xtensa.operands[c].access = access;
+		csn->detail->xtensa.operands[c].size = 4;
 
+		if (access & CS_AC_READ)
+		{
+			csn->detail->regs_read[csn->detail->regs_read_count++] = XTENSA_REG_A0 + regnr;
+		}
+		if (access & CS_AC_WRITE)
+		{
+			csn->detail->regs_write[csn->detail->regs_write_count++] = XTENSA_REG_A0 + regnr;
+		}
+	}
+}
+
+static void add_immediate(cs_insn *csn, int immediate, int size, uint8_t access)
+{
+	if (csn->detail)
+	{
+		int c = csn->detail->xtensa.op_count++;
+		csn->detail->xtensa.operands[c].type = XTENSA_OP_IMM;
+		csn->detail->xtensa.operands[c].imm = immediate;
+		csn->detail->xtensa.operands[c].access = access;
+		csn->detail->xtensa.operands[c].size = size;
+	}
+}
+
+int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
+						 xtensa_insn *pinsn, cs_insn *csn)
+{
+#define REGR(value) add_register(csn, value, CS_AC_READ)
+#define REGW(value) add_register(csn, value, CS_AC_WRITE)
+#define IMMR(size, value) add_immediate(csn, value, size, CS_AC_READ)
+#define IMMW(size, value) add_immediate(csn, value, size, CS_AC_WRITE)
+
+	xtensa_insn_group group = XTENSA_GRP_INVALID;
 	xtensa_insn insn = XTENSA_INSN_INVALID;
+	int size;
 	if (code_len >= 2)
 	{
 		if (code[0] & 0b1000)
@@ -153,15 +179,16 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len, xtensa_in
 			case 0b1100: // ST2.N
 				if (in16.ri7.i == 0)
 				{
-					insn = XTENSA_INSN_MOVI;
-					REGW(in16.ri6.s);
-					IMMR(1, (int8_t)(in16.ri6.imm754 << 5 | in16.ri6.imm730 << 1) >> 1);
+					insn = XTENSA_INSN_MOVI_N;
+					group = XTENSA_GRP_MEMORY_MOVE;
+					REGW(in16.ri7.s);
+					IMMR(1, (int8_t)(in16.ri7.imm764 << 5 | in16.ri7.imm730 << 1) >> 1);
 				}
 				break;
 			case 0b1101: // ST3.N
 				break;
 			}
-			return insn ? 2 : 0;
+			size = insn ? 2 : 0;
 		}
 		else if (code_len >= 3)
 		{
@@ -187,11 +214,13 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len, xtensa_in
 						{
 						case 0b0000: // NEG
 							insn = XTENSA_INSN_NEG;
+							group = XTENSA_GRP_MEMORY_ARITHMETIC;
 							REGW(in24.rrr.r);
 							REGR(in24.rrr.t);
 							break;
 						case 0b0001: // ABS
 							insn = XTENSA_INSN_ABS;
+							group = XTENSA_GRP_MEMORY_ARITHMETIC;
 							REGW(in24.rrr.r);
 							REGR(in24.rrr.t);
 							break;
@@ -224,31 +253,37 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len, xtensa_in
 			case 0b0111: // B
 				break;
 			}
-			return insn ? 3 : 0;
+			size = insn ? 3 : 0;
 		}
 	}
 
-	return false;
+	if (csn->detail && group)
+	{
+		csn->detail->groups[csn->detail->groups_count++] = group;
+	}
+
+	*pinsn = insn;
+	return size;
 }
 
 bool Xtensa_getInstruction(csh ud, const uint8_t *code, size_t code_len, MCInst *mi, uint16_t *size, uint64_t address,
 						   void *info)
 {
 	xtensa_insn instruction;
-	cs_xtensa *cs = &mi->flat_insn->detail->xtensa;
-	memset(mi->flat_insn->detail, 0, offsetof(cs_detail, xtensa) + sizeof(cs_xtensa));
+	if (mi->flat_insn->detail)
+	{
+		memset(mi->flat_insn->detail, 0, offsetof(cs_detail, xtensa) + sizeof(cs_xtensa));
+	}
 
-	int insnbytes = disassemble_internal(ud, code, code_len, &instruction, cs);
+	int insnbytes = disassemble_internal(ud, code, code_len, &instruction, mi->flat_insn);
 
 	if (insnbytes > 0)
 	{
 		mi->address = address;
 		*size = insnbytes;
-
-		if (mi->flat_insn->detail)
-		{
-			mi->flat_insn->id = (unsigned int)instruction;
-		}
+		mi->flat_insn->id = instruction;
+		mi->OpcodePub = instruction;
+		mi->Opcode = instruction;
 
 		return true;
 	}
