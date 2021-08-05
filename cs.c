@@ -68,6 +68,7 @@
 #include "arch/RISCV/RISCVModule.h"
 #include "arch/MOS65XX/MOS65XXModule.h"
 #include "arch/BPF/BPFModule.h"
+#include "arch/Xtensa/XtensaModule.h"
 
 static const struct {
 	// constructor initialization
@@ -231,6 +232,15 @@ static const struct {
 #else
 	{ NULL, NULL, 0 },
 #endif
+#ifdef CAPSTONE_HAS_XTENSA
+	{
+		Xtensa_global_init,
+		Xtensa_option,
+		~(CS_MODE_LITTLE_ENDIAN | CS_MODE_BIG_ENDIAN),
+	},
+#else
+	{ NULL, NULL, 0 },
+#endif
 };
 
 // bitmask of enabled architectures
@@ -282,6 +292,9 @@ static const uint32_t all_arch = 0
 #endif
 #ifdef CAPSTONE_HAS_RISCV
 	| (1 << CS_ARCH_RISCV)
+#endif
+#ifdef CAPSTONE_HAS_XTENSA
+	| (1 << CS_ARCH_XTENSA)
 #endif
 ;
 
@@ -355,7 +368,8 @@ bool CAPSTONE_API cs_support(int query)
 				    (1 << CS_ARCH_M68K)  | (1 << CS_ARCH_TMS320C64X) |
 				    (1 << CS_ARCH_M680X) | (1 << CS_ARCH_EVM)        |
 				    (1 << CS_ARCH_RISCV) | (1 << CS_ARCH_MOS65XX)    | 
-				    (1 << CS_ARCH_WASM)  | (1 << CS_ARCH_BPF));
+				    (1 << CS_ARCH_WASM)  | (1 << CS_ARCH_BPF)        |
+					(1 << CS_ARCH_XTENSA));
 
 	if ((unsigned int)query < CS_ARCH_MAX)
 		return all_arch & (1 << query);
@@ -657,6 +671,9 @@ static uint8_t skipdata_size(cs_struct *handle)
 			if (handle->mode & CS_MODE_RISCVC)
 				return 2;
 			return 4;
+		case CS_ARCH_XTENSA:
+			// Xtensa can have any size of data.
+			return 1;
 	}
 }
 
@@ -1388,6 +1405,11 @@ int CAPSTONE_API cs_op_count(csh ud, const cs_insn *insn, unsigned int op_type)
 				if (insn->detail->riscv.operands[i].type == (riscv_op_type)op_type)
 					count++;
 			break;
+		case CS_ARCH_XTENSA:
+			for (i = 0; i < insn->detail->xtensa.op_count; i++)
+				if (insn->detail->xtensa.operands[i].type == (xtensa_op_type)op_type)
+					count++;
+			break;
 	}
 
 	return count;
@@ -1550,6 +1572,14 @@ int CAPSTONE_API cs_op_index(csh ud, const cs_insn *insn, unsigned int op_type,
 		case CS_ARCH_RISCV:
 			for (i = 0; i < insn->detail->riscv.op_count; i++) {
 				if (insn->detail->riscv.operands[i].type == (riscv_op_type)op_type)
+					count++;
+				if (count == post)
+					return i;
+			}
+			break;
+		case CS_ARCH_XTENSA:
+			for (i = 0; i < insn->detail->riscv.op_count; i++) {
+				if (insn->detail->xtensa.operands[i].type == (xtensa_op_type)op_type)
 					count++;
 				if (count == post)
 					return i;
