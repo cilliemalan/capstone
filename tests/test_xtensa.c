@@ -72,7 +72,7 @@ static void print_insn_detail(cs_insn *ins)
 
 static void test()
 {
-#define XTENSA_CODE ""
+#define XTENSA_CODE "\x6C\xF0\x00\x11\x60"
 	struct platform platforms[] = {
 		{
 			CS_ARCH_XTENSA,
@@ -83,7 +83,7 @@ static void test()
 		},
 	};
 	
-	uint64_t address = 0x1000;
+	uint64_t address = 0;
 	cs_insn *insn;
 	int i;
 	size_t count;
