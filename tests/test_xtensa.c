@@ -72,7 +72,7 @@ static void print_insn_detail(cs_insn *ins)
 
 static void test()
 {
-#define XTENSA_CODE "\x6C\xF0\x00\x11\x60"
+#define XTENSA_CODE "\x00\x11\x60\xF0\x01\x60\x70\xF1\x60\x20\x01\x80\x70\xF0\x80\x2A\x01\x7A\xF0\x6C\xF0\x0C\x00\x0C\xA0\x5C\xF0\x6C\x00"
 	struct platform platforms[] = {
 		{
 			CS_ARCH_XTENSA,
@@ -97,6 +97,7 @@ static void test()
 		
 		//To turn on or off the Print Details option
 		cs_option(handle, CS_OPT_DETAIL, CS_OPT_ON);
+		cs_option(handle, CS_OPT_SKIPDATA, CS_OPT_ON);
 
 		count = cs_disasm(handle, platforms[i].code, platforms[i].size, address, 0, &insn);
 		if (count) {
