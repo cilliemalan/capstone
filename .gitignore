@@ -127,3 +127,7 @@ cstool/cstool
 
 # android
 android-ndk-*
+
+
+suite/xtensa/*.bin
+suite/xtensa/*.dmp
