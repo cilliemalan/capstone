@@ -1,0 +1,11 @@
+This program tests the disassembly of every single xtensa instruction
+and matches the disassembled output to the source file.
+
+In order to generate the binary, the ESP32 xtensa toolchain needs to be in
+your path.
+
+The toolchain can be found at:
+- Linux (also works on WSL) https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz
+- Windows (you will also need MSYS2) https://dl.espressif.com/dl/xtensa-esp32-elf-win32-1.22.0-61-gab8375a-5.2.0.zip
+- Mac OS https://dl.espressif.com/dl/xtensa-esp32-elf-osx-1.22.0-61-gab8375a-5.2.0.tar.gz
+

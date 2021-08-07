@@ -630,9 +630,14 @@ if (CAPSTONE_BUILD_TESTS)
         target_link_libraries(${ARM_REGRESS_BIN} ${default-target})
         add_test(NAME "capstone_${ARM_REGRESS_BIN}" COMMAND ${ARM_REGRESS_BIN})
     endif()
+
     # fuzz target built with the tests
     add_executable(fuzz_disasm suite/fuzz/onefile.c suite/fuzz/fuzz_disasm.c suite/fuzz/platform.c)
     target_link_libraries(fuzz_disasm ${default-target})
+
+    # Xtensa test suite
+    add_executable(xtensa_suite suite/xtensa/xtensa_suite.c)
+    target_link_libraries(xtensa_suite ${default-target})
 endif ()
 
 source_group("Source\\Engine" FILES ${SOURCES_ENGINE})
