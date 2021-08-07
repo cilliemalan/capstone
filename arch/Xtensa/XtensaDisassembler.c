@@ -194,7 +194,7 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				REGR(in16.rrrn.s);
 				IMMR(1, in16.rrrn.t == 0 ? 0xffffffff : in16.rrrn.t);
 				break;
-			case 0b1100: // ST2.N
+			case 0b1100:			 // ST2.N
 				if (in16.ri7.i == 0) // MOVI.N
 				{
 					insn = XTENSA_INSN_MOVI_N;
@@ -202,8 +202,34 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					REGW(in16.ri7.s);
 					IMMR(1, compliment(7, 95, in16.ri7.imm764 << 4 | in16.ri7.imm730));
 				}
+				else if (in16.ri6.i == 0b10) // BEQZ.N
+				{
+				}
+				else // BNEZ.N
+				{
+				}
 				break;
 			case 0b1101: // ST3.N
+				switch (in16.rrrn.r)
+				{
+				case 0b0000: // MOV.N
+					break;
+				case 0b1111: // S3
+					switch (in16.rrrn.t)
+					{
+					case 0b0000: // RET.N
+						break;
+					case 0b0001: // RETW.N
+						break;
+					case 0b0010: // BREAK.N
+						break;
+					case 0b0011: // NOP.N
+						break;
+					case 0b0110: // ILL.N
+						break;
+					}
+					break;
+				}
 				break;
 			}
 			size = insn ? 2 : 0;
@@ -222,11 +248,156 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					switch (in24.rrr.op2)
 					{
 					case 0b0000: // ST0
+						switch (in24.rrr.r)
+						{
+						case 0b0000: // SNM0
+							switch (in24.callx.m)
+							{
+							case 0b00: // ILL
+								break;
+							case 0b10: // JR
+								switch (in24.callx.n)
+								{
+								case 0b00: // RET
+									break;
+								case 0b01: // RETW
+									break;
+								case 0b10: // JX
+									break;
+								}
+							case 0b11: // CALLX
+								switch (in24.callx.n)
+								{
+								case 0b00: // CALLX0
+									break;
+								case 0b01: // CALLX4
+									break;
+								case 0b10: // CALLX08
+									break;
+								case 0b11: // CALLX12
+									break;
+								}
+								break;
+							}
+							break;
+						case 0b0001: // MOVSP
+							break;
+						case 0b0010: // SYNC
+							switch (in24.rrr.t)
+							{
+							case 0b0000: // ISYNC
+								break;
+							case 0b0001: // RSYNC
+								break;
+							case 0b0010: // ESYNC
+								break;
+							case 0b0011: // DSYNC
+								break;
+							case 0b1000: // EXCW
+								break;
+							case 0b1100: // MEMW
+								break;
+							case 0b1101: // EXTW
+								break;
+							}
+							break;
+						case 0b0011: // RFEI
+							switch (in24.rrr.t)
+							{
+							case 0b0000: // RFET
+								switch (in24.rrr.s)
+								{
+								case 0b0000: // RFE
+									break;
+								case 0b0001: // RFUE
+									break;
+								case 0b0010: // RFDE
+									break;
+								case 0b0100: // RFWO
+									break;
+								case 0b0101: // RFWU
+									break;
+								}
+							case 0b0001: // RFI
+								break;
+							case 0b0010: // RFME
+								break;
+							}
+							break;
+						case 0b0100: // BREAK
+							break;
+						case 0b0101: // SYSCALL
+							break;
+						case 0b0110: // RSIL
+							break;
+						case 0b0111: // WAITI
+							break;
+						case 0b1000: // ANY4
+							break;
+						case 0b1001: // ALL4
+							break;
+						case 0b1010: // ANY8
+							break;
+						case 0b1011: // ALL8
+							break;
+						}
+						break;
 					case 0b0001: // AND
+						break;
 					case 0b0010: // OR
+						break;
 					case 0b0011: // XOR
+						break;
 					case 0b0100: // ST1
+						switch (in24.rrr.r)
+						{
+						case 0b0000: // SSR
+							break;
+						case 0b0001: // SSL
+							break;
+						case 0b0010: // SSA8L
+							break;
+						case 0b0011: // SSA8B
+							break;
+						case 0b0100: // SSAI
+							break;
+						case 0b0110: // RER
+							break;
+						case 0b0111: // WER
+							break;
+						case 0b1000: // ROTW
+							break;
+						case 0b1110: // NSA
+							break;
+						case 0b1111: // NSAU
+							break;
+						}
+						break;
 					case 0b0101: // TLB
+						switch (in24.rrr.r)
+						{
+						case 0b0011: // RITLB0
+							break;
+						case 0b0100: // IITLB
+							break;
+						case 0b0101: // PITLB
+							break;
+						case 0b0110: // WITLB
+							break;
+						case 0b0111: // RITLB1
+							break;
+						case 0b1011: // RDTLB0
+							break;
+						case 0b1100: // IDTLB
+							break;
+						case 0b1101: // PDTLB
+							break;
+						case 0b1110: // WDTLB
+							break;
+						case 0b1111: // RDTLB1
+							break;
+						}
+						break;
 					case 0b0110: // RT0
 						switch (in24.rrr.s)
 						{
@@ -245,25 +416,262 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						}
 						break;
 					case 0b1000: // ADD
-							insn = XTENSA_INSN_ADD;
-							group = XTENSA_GRP_ARITHMETIC;
-							REGW(in24.rrr.r);
-							REGR(in24.rrr.s);
-							REGR(in24.rrr.t);
-							break;
+						insn = XTENSA_INSN_ADD;
+						group = XTENSA_GRP_ARITHMETIC;
+						REGW(in24.rrr.r);
+						REGR(in24.rrr.s);
+						REGR(in24.rrr.t);
+						break;
 					case 0b1001: // ADDX2
 					case 0b1010: // ADDX4
 					case 0b1011: // ADDx8
-							insn = XTENSA_INSN_ADDX2 + (in24.rrr.op2 & 0b11) - 1;
-							group = XTENSA_GRP_ARITHMETIC;
-							REGW(in24.rrr.r);
-							REGR(in24.rrr.s);
-							REGR(in24.rrr.t);
-							break;
+						insn = XTENSA_INSN_ADDX2 + (in24.rrr.op2 & 0b11) - 1;
+						group = XTENSA_GRP_ARITHMETIC;
+						REGW(in24.rrr.r);
+						REGR(in24.rrr.s);
+						REGR(in24.rrr.t);
+						break;
 					case 0b1100: // SUB
 					case 0b1101: // SUBX2
 					case 0b1110: // SUBX4
 					case 0b1111: // SUBX8
+						insn = XTENSA_INSN_SUBX2 + (in24.rrr.op2 & 0b11) - 1;
+						group = XTENSA_GRP_ARITHMETIC;
+						REGW(in24.rrr.r);
+						REGR(in24.rrr.s);
+						REGR(in24.rrr.t);
+						break;
+					}
+					break;
+				case 0b0001: // RST1
+					switch (in24.rrr.op2)
+					{
+					case 0b0000:
+					case 0b0001: // SLLI
+						break;
+					case 0b0010:
+					case 0b0011: // SRAI
+						break;
+					case 0b0100: // SRLI
+						break;
+					case 0b0110: // XSR
+						break;
+					case 0b0111: // ACCER
+						switch (in24.rrr.op2)
+						{
+						case 0b0000: // RER
+						case 0b1000: // WER
+							break;
+						}
+						break;
+					case 0b1000: // SRC
+						break;
+					case 0b1001: // SRL
+						break;
+					case 0b1010: // SLL
+						break;
+					case 0b1011: // SRA
+						break;
+					case 0b1100: // MUL16U
+						break;
+					case 0b1101: // MUL16S
+						break;
+					case 0b1111: // IMP
+						switch (in24.rrr.r)
+						{
+						case 0b0000: // LICT
+							break;
+						case 0b0001: // SICT
+							break;
+						case 0b0010: // LICW
+							break;
+						case 0b0011: // SICW
+							break;
+						case 0b1000: // LDCT
+							break;
+						case 0b1001: // SDCT
+							break;
+						case 0b1110: // RFDX
+							switch (in24.rrr.t)
+							{
+							case 0b0000: // RFDO
+								break;
+							case 0b0001: // RFDD
+								break;
+							}
+							break;
+						}
+						break;
+					}
+					break;
+				case 0b0010: // RST2
+					switch (in24.rrr.op2)
+					{
+					case 0b0000: // ANDB
+						break;
+					case 0b0001: // ANDBC
+						break;
+					case 0b0010: // ORB
+						break;
+					case 0b0011: // ORBC
+						break;
+					case 0b0100: // XORB
+						break;
+					case 0b1000: // MULL
+						break;
+					case 0b1010: // MULUH
+						break;
+					case 0b1011: // MULSH
+						break;
+					case 0b1100: // QUOU
+						break;
+					case 0b1101: // QUOS
+						break;
+					case 0b1110: // REMU
+						break;
+					case 0b1111: // REMS
+						break;
+					}
+					break;
+				case 0b0011: // RST3
+					switch (in24.rrr.op2)
+					{
+					case 0b0000: // RSR
+						break;
+					case 0b0001: // WSR
+						break;
+					case 0b0010: // SEXT
+						break;
+					case 0b0011: // CLAMPS
+						break;
+					case 0b0100: // MIN
+						break;
+					case 0b0101: // MAX
+						break;
+					case 0b0110: // MINU
+						break;
+					case 0b0111: // MAXU
+						break;
+					case 0b1000: // MOVEQZ
+						break;
+					case 0b1001: // MOVNEZ
+						break;
+					case 0b1010: // MOVLTZ
+						break;
+					case 0b1011: // MOVGEZ
+						break;
+					case 0b1100: // MOVF
+						break;
+					case 0b1101: // MOVT
+						break;
+					case 0b1110: // RUR
+						break;
+					case 0b1111: // WUR
+						break;
+					}
+					break;
+				case 0b0100: // EXTUI
+					break;
+				case 0b0101: // EXTUI
+					break;
+				case 0b0110: // CUST0
+					break;
+				case 0b0111: // CUST1
+					break;
+				case 0b1000: // LSCX
+					switch (in24.rrr.op2)
+					{
+					case 0b0000: // LSX
+						break;
+					case 0b0001: // LSXU
+						break;
+					case 0b0100: // SSX
+						break;
+					case 0b0101: // SSXU
+						break;
+					}
+					break;
+				case 0b1001: // LSC4
+					switch (in24.rrr.op2)
+					{
+					case 0b0000: // L32E
+						break;
+					case 0b0100: // S32E
+						break;
+					}
+					break;
+				case 0b1010: // FP0
+					switch (in24.rrr.op2)
+					{
+					case 0b0000: // ADD.S
+						break;
+					case 0b0001: // SUB.S
+						break;
+					case 0b0010: // MUL.S
+						break;
+					case 0b0100: // MADD.S
+						break;
+					case 0b0101: // MSUB.S
+						break;
+					case 0b1000: // ROUND.S
+						break;
+					case 0b1001: // TRUNC.S
+						break;
+					case 0b1010: // FLOOR.S
+						break;
+					case 0b1011: // CEIL.S
+						break;
+					case 0b1100: // FLOAT.S
+						break;
+					case 0b1101: // UFLOAT.S
+						break;
+					case 0b1110: // UTRUNC.S
+						break;
+					case 0b1111: // FP1OP
+						switch (in24.rrr.t)
+						{
+						case 0b0000: // MOV.S
+							break;
+						case 0b0001: // ABS.s
+							break;
+						case 0b0100: // RFR
+							break;
+						case 0b0101: // WFR
+							break;
+						case 0b0110: // NEG.S
+							break;
+						}
+						break;
+					}
+					break;
+				case 0b1011: // FP1
+					switch (in24.rrr.op2)
+					{
+					case 0b0001: // UN.S
+						break;
+					case 0b0010: // QEQ.S
+						break;
+					case 0b0011: // UEQ.S
+						break;
+					case 0b0100: // OLT.S
+						break;
+					case 0b0101: // ULT.S
+						break;
+					case 0b0110: // OLE.S
+						break;
+					case 0b0111: // ULE.S
+						break;
+					case 0b1000: // MOVEQZ.S
+						break;
+					case 0b1001: // MOVNEZ.S
+						break;
+					case 0b1010: // MOVLTZ.S
+						break;
+					case 0b1011: // MOVGEZ.S
+						break;
+					case 0b1100: // MOVF.S
+						break;
+					case 0b1101: // MOVT.S
 						break;
 					}
 					break;
@@ -272,16 +680,398 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 			case 0b0001: // L32R
 				break;
 			case 0b0010: // LSAI
+				switch (in24.rri4.r)
+				{
+				case 0b0000: // L8UI
+					break;
+				case 0b0001: // L16UI
+					break;
+				case 0b0010: // L32I
+					break;
+				case 0b0100: // S8I
+					break;
+				case 0b0101: // S16I
+					break;
+				case 0b0110: // S32I
+					break;
+				case 0b0111: // CACHE
+					switch (in24.rri4.t)
+					{
+					case 0b0000: // DPFR
+						break;
+					case 0b0001: // DPFW
+						break;
+					case 0b0010: // DPFRO
+						break;
+					case 0b0011: // DPFWO
+						break;
+					case 0b0100: // DHWB
+						break;
+					case 0b0101: // DHWBI
+						break;
+					case 0b0110: // DHI
+						break;
+					case 0b0111: // DII
+						break;
+					case 0b1000: // DCE
+						switch (in24.rri4.op1)
+						{
+						case 0b0000: // DPFL
+							break;
+						case 0b0010: // DHU
+							break;
+						case 0b0011: // DIU
+							break;
+						case 0b0100: // DIWB
+							break;
+						case 0b0101: // DIWBI
+							break;
+						}
+						break;
+					case 0b1100: // IPF
+						break;
+					case 0b1101: // ICE
+						switch (in24.rri4.op1)
+						{
+						case 0b0000: // IPFL
+							break;
+						case 0b0010: // IHU
+							break;
+						case 0b0011: // IIU
+							break;
+						}
+						break;
+					case 0b1110: // IHI
+						break;
+					case 0b1111: // III
+						break;
+					}
+					break;
+				case 0b1001: // L16SI
+					break;
+				case 0b1010: // MOVI
+					break;
+				case 0b1011: // L32AI
+					break;
+				case 0b1100: // ADDI
+					break;
+				case 0b1101: // ADDMI
+					break;
+				case 0b1110: // S32C1I
+					break;
+				case 0b1111: // S32RI
+					break;
+				}
 				break;
 			case 0b0011: // LSCI
+				switch (in24.rri8.r)
+				{
+				case 0b0000: // LSI
+					break;
+				case 0b0100: // SSI
+					break;
+				case 0b1000: // LSIU
+					break;
+				case 0b1100: // SSIU
+					break;
+				}
 				break;
 			case 0b0100: // MAC16
+				switch (in24.rrr.op2)
+				{
+				case 0b0000: // MACID
+					switch (in24.rrr.op1)
+					{
+					case 0b1000: // MULA.DD.LL.LDINC
+						break;
+					case 0b1001: // MULA.DD.HL.LDINC
+						break;
+					case 0b1010: // MULA.DD.LH.LDINC
+						break;
+					case 0b1011: // MULA.DD.HH.LDINC
+						break;
+					}
+					break;
+				case 0b0001: // MACCD
+					switch (in24.rrr.op1)
+					{
+					case 0b1000: // MULA.DD.LL.LDDEC
+						break;
+					case 0b1001: // MULA.DD.HL.LDDEC
+						break;
+					case 0b1010: // MULA.DD.LH.LDDEC
+						break;
+					case 0b1011: // MULA.DD.HH.LDDEC
+						break;
+					}
+				case 0b0010: // MACDD
+					switch (in24.rrr.op1)
+					{
+					case 0b0100: // MUL.DD.LL
+						break;
+					case 0b0101: // MUL.DD.HL
+						break;
+					case 0b0110: // MUL.DD.LH
+						break;
+					case 0b0111: // MUL.DD.HH
+						break;
+					case 0b1000: // MULA.DD.LL
+						break;
+					case 0b1001: // MULA.DD.HL
+						break;
+					case 0b1010: // MULA.DD.LH
+						break;
+					case 0b1011: // MULA.DD.HH
+						break;
+					case 0b1100: // MULS.DD.LL
+						break;
+					case 0b1101: // MULS.DD.HL
+						break;
+					case 0b1110: // MULS.DD.LH
+						break;
+					case 0b1111: // MULS.DD.HH
+						break;
+					}
+					break;
+				case 0b0011: // MACAD
+					switch (in24.rrr.op1)
+					{
+					case 0b0100: // MUL.AD.LL
+						break;
+					case 0b0101: // MUL.AD.HL
+						break;
+					case 0b0110: // MUL.AD.LH
+						break;
+					case 0b0111: // MUL.AD.HH
+						break;
+					case 0b1000: // MULA.AD.LL
+						break;
+					case 0b1001: // MULA.AD.HL
+						break;
+					case 0b1010: // MULA.AD.LH
+						break;
+					case 0b1011: // MULA.AD.HH
+						break;
+					case 0b1100: // MULS.AD.LL
+						break;
+					case 0b1101: // MULS.AD.HL
+						break;
+					case 0b1110: // MULS.AD.LH
+						break;
+					case 0b1111: // MULS.AD.HH
+						break;
+					}
+					break;
+				case 0b0100: // MACIA
+					switch (in24.rrr.op1)
+					{
+					case 0b1000: // MULA.DA.LL.LDINC
+						break;
+					case 0b1001: // MULA.DA.HL.LDINC
+						break;
+					case 0b1010: // MULA.DA.LH.LDINC
+						break;
+					case 0b1011: // MULA.DA.HH.LDINC
+						break;
+					}
+					break;
+				case 0b0101: // MACCA
+					switch (in24.rrr.op1)
+					{
+					case 0b1000: // MULA.DA.LL.LDDEC
+						break;
+					case 0b1001: // MULA.DA.HL.LDDEC
+						break;
+					case 0b1010: // MULA.DA.LH.LDDEC
+						break;
+					case 0b1011: // MULA.DA.HH.LDDEC
+						break;
+					}
+					break;
+				case 0b0110: // MACDA
+					switch (in24.rrr.op1)
+					{
+					case 0b0100: // MUL.DA.LL
+						break;
+					case 0b0101: // MUL.DA.HL
+						break;
+					case 0b0110: // MUL.DA.LH
+						break;
+					case 0b0111: // MUL.DA.HH
+						break;
+					case 0b1000: // MULA.DA.LL
+						break;
+					case 0b1001: // MULA.DA.HL
+						break;
+					case 0b1010: // MULA.DA.LH
+						break;
+					case 0b1011: // MULA.DA.HH
+						break;
+					case 0b1100: // MULS.DA.LL
+						break;
+					case 0b1101: // MULS.DA.HL
+						break;
+					case 0b1110: // MULS.DA.LH
+						break;
+					case 0b1111: // MULS.DA.HH
+						break;
+					}
+					break;
+				case 0b0111: // MACAA
+					switch (in24.rrr.op1)
+					{
+					case 0b0000: // UMUL.AA.LL
+						break;
+					case 0b0001: // UMUL.AA.HL
+						break;
+					case 0b0010: // UMUL.AA.LH
+						break;
+					case 0b0011: // UMUL.AA.HH
+						break;
+					case 0b0100: // MUL.AA.LL
+						break;
+					case 0b0101: // MUL.AA.HL
+						break;
+					case 0b0110: // MUL.AA.LH
+						break;
+					case 0b0111: // MUL.AA.HH
+						break;
+					case 0b1000: // MULA.AA.LL
+						break;
+					case 0b1001: // MULA.AA.HL
+						break;
+					case 0b1010: // MULA.AA.LH
+						break;
+					case 0b1011: // MULA.AA.HH
+						break;
+					case 0b1100: // MULS.AA.LL
+						break;
+					case 0b1101: // MULS.AA.HL
+						break;
+					case 0b1110: // MULS.AA.LH
+						break;
+					case 0b1111: // MULS.AA.HH
+						break;
+					}
+					break;
+				case 0b1000:					// MACI
+					if (in24.rrr.op1 == 0b0000) // LDINC
+					{
+					}
+					break;
+				case 0b1001:					// MACC
+					if (in24.rrr.op1 == 0b0000) // LDDEC
+					{
+					}
+					break;
+				}
 				break;
 			case 0b0101: // CALLN
+				switch (in24.call.n)
+				{
+				case 0b00: // CALL0
+					break;
+				case 0b01: // CALL4
+					break;
+				case 0b10: // CALL8
+					break;
+				case 0b11: // CALL12
+					break;
+				}
 				break;
 			case 0b0110: // SI
+				switch (in24.call.n)
+				{
+				case 0b00: // J
+					break;
+				case 0b01: // BZ
+					switch (in24.bri12.m)
+					{
+					case 0b00: // BEQZ
+						break;
+					case 0b01: // BNEZ
+						break;
+					case 0b10: // BLTZ
+						break;
+					case 0b11: // BGEZ
+						break;
+					}
+					break;
+				case 0b10: // BI0
+					switch (in24.bri12.m)
+					{
+					case 0b00: // BEQI
+						break;
+					case 0b01: // BNEI
+						break;
+					case 0b10: // BLTI
+						break;
+					case 0b11: // BGEI
+						break;
+					}
+					break;
+				case 0b11: // BI1
+					switch (in24.bri12.m)
+					{
+					case 0b00: // ENTRY
+						break;
+					case 0b01: // B1
+						switch (in24.bri8.r)
+						{
+						case 0b0000: // BF
+							break;
+						case 0b0001: // BT
+							break;
+						case 0b1000: // LOOP
+							break;
+						case 0b1001: // LOOPNEZ
+							break;
+						case 0b1010: // LOOPGTZ
+							break;
+						}
+						break;
+					case 0b10: // BLTUI
+						break;
+					case 0b11: // BGEUI
+						break;
+					}
+					break;
+				}
 				break;
 			case 0b0111: // B
+				switch (in24.rri8.r)
+				{
+				case 0b0000: // BNONE
+					break;
+				case 0b0001: // NEQ
+					break;
+				case 0b0010: // BLT
+					break;
+				case 0b0011: // BLTU
+					break;
+				case 0b0100: // BALL
+					break;
+				case 0b0101: // BBC
+					break;
+				case 0b0110: // BBCI
+				case 0b0111:
+					break;
+				case 0b1000: // BANY
+					break;
+				case 0b1001: // BNE
+					break;
+				case 0b1010: // BGE
+					break;
+				case 0b1011: // BGEU
+					break;
+				case 0b1100: // BNALL
+					break;
+				case 0b1101: // BBS
+					break;
+				case 0b1110: // BBSI
+				case 0b1111:
+					break;
+				}
 				break;
 			}
 			size = insn ? 3 : 0;
