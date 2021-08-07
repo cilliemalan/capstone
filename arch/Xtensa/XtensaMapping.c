@@ -50,6 +50,12 @@ static const char *xtensa_instructions[] =
 		"add.n",
 		"add.s",
 		"addi",
+		"addi_n",
+		"addmi",
+		"addx2",
+		"addx4",
+		"addx8",
+
 		"movi",
 		"movi.n",
 		"neg",

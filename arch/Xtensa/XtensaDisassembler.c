@@ -181,8 +181,18 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 			case 0b1001: // S32I.N
 				break;
 			case 0b1010: // ADD.N
+				insn = XTENSA_INSN_ADD_N;
+				group = XTENSA_GRP_MEMORY_ARITHMETIC;
+				REGW(in16.rrrn.r);
+				REGR(in16.rrrn.s);
+				REGR(in16.rrrn.t);
 				break;
 			case 0b1011: // ADDI.N
+				insn = XTENSA_INSN_ADDI_N;
+				group = XTENSA_GRP_MEMORY_ARITHMETIC;
+				REGW(in16.rrrn.r);
+				REGR(in16.rrrn.s);
+				IMMR(1, in16.rrrn.t == 0 ? 0xffffffff : in16.rrrn.t);
 				break;
 			case 0b1100: // ST2.N
 				if (in16.ri7.i == 0) // MOVI.N
@@ -233,10 +243,23 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 							REGR(in24.rrr.t);
 							break;
 						}
+						break;
 					case 0b1000: // ADD
+							insn = XTENSA_INSN_ADD;
+							group = XTENSA_GRP_MEMORY_ARITHMETIC;
+							REGW(in24.rrr.r);
+							REGR(in24.rrr.s);
+							REGR(in24.rrr.t);
+							break;
 					case 0b1001: // ADDX2
 					case 0b1010: // ADDX4
 					case 0b1011: // ADDx8
+							insn = XTENSA_INSN_ADDX2 + (in24.rrr.op2 & 0b11) - 1;
+							group = XTENSA_GRP_MEMORY_ARITHMETIC;
+							REGW(in24.rrr.r);
+							REGR(in24.rrr.s);
+							REGR(in24.rrr.t);
+							break;
 					case 0b1100: // SUB
 					case 0b1101: // SUBX2
 					case 0b1110: // SUBX4

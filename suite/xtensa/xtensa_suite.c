@@ -223,7 +223,8 @@ int main()
 
             if (skipuntil >= source)
             {
-                printf("❌ <nothing> != %s\n", sline);
+                printf("❌\t<nothing> != %s\n", sline);
+                errors++;
             }
         } while (skipuntil >= source);
 
@@ -256,7 +257,8 @@ int main()
 
             if (skippingdata)
             {
-                printf("❌ %s\n", dline);
+                printf("❌\t%s\n", dline);
+                errors++;
             }
         } while (skippingdata);
 
@@ -267,7 +269,7 @@ int main()
 
             if (match)
             {
-                printf("✔️ %s\n", dline);
+                printf("✔️\t%s\n", dline);
             }
             else
             {
@@ -281,11 +283,13 @@ int main()
                 {
                     binary -= badvance;
                     binary_len += badvance;
-                    printf("❌ <nothing> != %s\n", sline);
+                    printf("❌\t<nothing> != %s\n", sline);
+                    errors++;
                 }
                 else
                 {
-                    printf("❌ %s != %s\n", dline, sline);
+                    printf("❌\t%s != %s\n", dline, sline);
+                    errors++;
                 }
             }
         }
