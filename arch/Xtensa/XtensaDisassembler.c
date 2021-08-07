@@ -148,6 +148,14 @@ static void add_immediate(cs_insn *csn, int immediate, int size, uint8_t access)
 	}
 }
 
+static inline int32_t compliment(uint32_t bits, uint32_t max, uint32_t immediate)
+{
+	if (immediate > max)
+		return immediate - (1 << bits);
+	else
+		return immediate;
+}
+
 int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						 xtensa_insn *pinsn, cs_insn *csn)
 {
@@ -177,12 +185,12 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 			case 0b1011: // ADDI.N
 				break;
 			case 0b1100: // ST2.N
-				if (in16.ri7.i == 0)
+				if (in16.ri7.i == 0) // MOVI.N
 				{
 					insn = XTENSA_INSN_MOVI_N;
 					group = XTENSA_GRP_MEMORY_MOVE;
 					REGW(in16.ri7.s);
-					IMMR(1, (int8_t)(in16.ri7.imm764 << 5 | in16.ri7.imm730 << 1) >> 1);
+					IMMR(1, compliment(7, 95, in16.ri7.imm764 << 4 | in16.ri7.imm730));
 				}
 				break;
 			case 0b1101: // ST3.N
