@@ -26,6 +26,7 @@ extern "C"
 		XTENSA_OP_FP,		   ///< = CS_OP_FP (Immediate operand).
 		XTENSA_OP_SYSREG,	   ///< = XTENSA_OP_SYSREG (System register operand).
 		XTENSA_OP_USERREG,	   ///< = XTENSA_OP_USERREG (User register operand).
+		XTENSA_OP_BOOLREG,	   ///< = XTENSA_OP_BOOLREG (Boolean register operand).
 	} xtensa_op_type;
 
 	// Instruction operand
@@ -105,6 +106,24 @@ extern "C"
 		XTENSA_FP_REG_FR13,
 		XTENSA_FP_REG_FR14,
 		XTENSA_FP_REG_FR15,
+
+		//> Boolean registers
+		XTENSA_BR_REG_B0,
+		XTENSA_BR_REG_B1,
+		XTENSA_BR_REG_B2,
+		XTENSA_BR_REG_B3,
+		XTENSA_BR_REG_B4,
+		XTENSA_BR_REG_B5,
+		XTENSA_BR_REG_B6,
+		XTENSA_BR_REG_B7,
+		XTENSA_BR_REG_B8,
+		XTENSA_BR_REG_B9,
+		XTENSA_BR_REG_B10,
+		XTENSA_BR_REG_B11,
+		XTENSA_BR_REG_B12,
+		XTENSA_BR_REG_B13,
+		XTENSA_BR_REG_B14,
+		XTENSA_BR_REG_B15,
 	} xtensa_reg;
 
 	typedef enum xtensa_special_reg
