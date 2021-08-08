@@ -27,15 +27,7 @@ void Xtensa_printInst(MCInst *MI, SStream *O, void *info)
 			SStream_concat(O, Xtensa_reg_name((csh)MI->csh, op->reg));
 			break;
 		case XTENSA_OP_IMM:
-			if (op->imm <= 4096)
-			{
-				// negative numbers and positive <= 4096 print as integers
-				SStream_concat(O, "%i", op->imm);
-			}
-			else
-			{
-				SStream_concat(O, "0x%x", op->imm);
-			}
+			SStream_concat(O, "%i", op->imm);
 			break;
 		case XTENSA_OP_SYSREG:
 			SStream_concat(O, Xtensa_sysreg_name((csh)MI->csh, op->reg));
