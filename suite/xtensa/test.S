@@ -53,6 +53,28 @@ andbc	b1,	b2,	b3
 any4	b1,	b4
 any8	b1,	b8
 
+_ball	a1,	a2,	0
+
+_bany	a1,	a2,	0
+
+_bbc	a1,	a2,	0
+
+_bbci	a1,	0,	0
+_bbci	a1,	1,	0
+_bbci	a1,	10,	0
+_bbci	a1,	30,	0
+_bbci	a1,	31,	0
+
+_bbs	a1,	a15,	0
+
+_bbsi	a1,	0,	0
+_bbsi	a1,	1,	0
+_bbsi	a1,	10,	0
+_bbsi	a1,	30,	0
+_bbsi	a1,	31,	0
+
+_beq	a1,	a15,	0
+
 _movi.n	a0,	-17
 _movi.n	a0,	-1
 _movi.n	a0,	0
