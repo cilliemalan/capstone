@@ -27,6 +27,7 @@ void Xtensa_printInst(MCInst *MI, SStream *O, void *info)
 			SStream_concat(O, Xtensa_reg_name((csh)MI->csh, op->reg));
 			break;
 		case XTENSA_OP_IMM:
+			// TODO: proper handling for large unsigned immediates
 			SStream_concat(O, "%i", op->imm);
 			break;
 		case XTENSA_OP_SYSREG:

@@ -85,6 +85,7 @@ static struct {
 	{ "65c02", CS_ARCH_MOS65XX, CS_MODE_MOS65XX_65C02 },
 	{ "w65c02", CS_ARCH_MOS65XX, CS_MODE_MOS65XX_W65C02 },
 	{ "65816", CS_ARCH_MOS65XX, CS_MODE_MOS65XX_65816_LONG_MX },
+	{ "xtensa", CS_ARCH_XTENSA, 0 },
 	{ NULL }
 };
 
@@ -104,6 +105,7 @@ void print_insn_detail_riscv(csh handle, cs_insn *ins);
 void print_insn_detail_wasm(csh handle, cs_insn *ins);
 void print_insn_detail_mos65xx(csh handle, cs_insn *ins);
 void print_insn_detail_bpf(csh handle, cs_insn *ins);
+void print_insn_detail_xtensa(csh handle, cs_insn *ins);
 
 static void print_details(csh handle, cs_arch arch, cs_mode md, cs_insn *ins);
 
@@ -274,6 +276,10 @@ static void usage(char *prog)
 		printf("        riscv64     riscv64\n");
 	}
 
+	if (cs_support(CS_ARCH_XTENSA)) {
+		printf("        xtensa      Xtensa\n");
+	}
+
 	printf("\nExtra options:\n");
 	printf("        -d show detailed information of the instructions\n");
 	printf("        -s decode in SKIPDATA mode\n");
@@ -333,6 +339,9 @@ static void print_details(csh handle, cs_arch arch, cs_mode md, cs_insn *ins)
 			break;
 		case CS_ARCH_RISCV:
 			print_insn_detail_riscv(handle, ins);
+			break;
+		case CS_ARCH_XTENSA:
+			print_insn_detail_xtensa(handle, ins);
 			break;
 		default: break;
 	}
@@ -444,6 +453,10 @@ int main(int argc, char **argv)
 
 				if (cs_support(CS_ARCH_RISCV)) {
 					printf("riscv=1 ");
+				}
+				
+				if (cs_support(CS_ARCH_XTENSA)) {
+					printf("xtensa=1 ");
 				}
 
 				if (cs_support(CS_SUPPORT_DIET)) {
