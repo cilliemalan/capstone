@@ -156,6 +156,25 @@ static inline int32_t compliment(uint32_t bits, uint32_t max, uint32_t immediate
 		return immediate;
 }
 
+static int32_t b4const(uint8_t x)
+{
+	return x == 0 ? -1 : x < 9			   ? x
+					 : x == 9			   ? 10
+					 : x == 10			   ? 12
+					 : x >= 11 && (x) < 16 ? (1 << (x - 7))
+										   : 0;
+}
+
+static uint32_t b4constu(uint8_t x)
+{
+	return x == 0 ? 32768 : x == 1			  ? 65536
+						: x < 9				  ? x
+						: x == 9			  ? 10
+						: x == 10			  ? 12
+						: x >= 11 && (x) < 16 ? (1 << (x - 7))
+											  : 0;
+}
+
 int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						 xtensa_insn *pinsn, cs_insn *csn)
 {
@@ -166,32 +185,9 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 #define RBR(value) add_register(csn, XTENSA_BR_REG_B0 + value, CS_AC_READ)
 #define RBW(value) add_register(csn, XTENSA_BR_REG_B0 + value, CS_AC_WRITE)
 #define IMMR(size, value) add_immediate(csn, value, size, CS_AC_READ)
-#define IMMW(size, value) add_immediate(csn, value, size, CS_AC_WRITE)
-#define IN1(i, a) \
-	insn = i;     \
+#define INSN(i, a) \
+	insn = i;      \
 	group1 = a;
-#define IN2(i, a, b) \
-	insn = i;        \
-	group1 = a;      \
-	group2 = b;
-#define IN3(i, a, b, c) \
-	insn = a;           \
-	group1 = a;         \
-	group2 = b;         \
-	group3 = c;
-#define B4CONST(x) (                                     \
-	(x) == 0 ? -1 : (x) < 9				? (x)            \
-				: (x) == 9				? 10             \
-				: (x) == 10				? 12             \
-				: (x) >= 11 && (x) < 16 ? (1 << ((x)-7)) \
-										: 0)
-#define B4CONSTU(x) (                                       \
-	(x) == 0 ? 32768 : (x) == 1			   ? 65536          \
-				   : (x) < 9			   ? (x)            \
-				   : (x) == 9			   ? 10             \
-				   : (x) == 10			   ? 12             \
-				   : (x) >= 11 && (x) < 16 ? (1 << ((x)-7)) \
-										   : 0)
 
 	xtensa_insn_group group1 = XTENSA_GRP_INVALID;
 	xtensa_insn_group group2 = XTENSA_GRP_INVALID;
@@ -212,35 +208,35 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 			case 0b1001: // S32I.N
 				break;
 			case 0b1010: // ADD.N
-				IN1(XTENSA_INSN_ADD_N, XTENSA_GRP_ARITHMETIC);
+				INSN(XTENSA_INSN_ADD_N, XTENSA_GRP_ARITHMETIC);
 				REGW(in16.rrrn.r);
 				REGR(in16.rrrn.s);
 				REGR(in16.rrrn.t);
 				break;
 			case 0b1011: // ADDI.N
-				IN1(XTENSA_INSN_ADDI_N, XTENSA_GRP_ARITHMETIC);
+				INSN(XTENSA_INSN_ADDI_N, XTENSA_GRP_ARITHMETIC);
 				REGW(in16.rrrn.r);
 				REGR(in16.rrrn.s);
-				IMMR(1, in16.rrrn.t == 0 ? 0xffffffff : in16.rrrn.t);
+				IMMR(4, in16.rrrn.t == 0 ? 0xffffffff : in16.rrrn.t);
 				break;
 			case 0b1100:			 // ST2.N
 				if (in16.ri7.i == 0) // MOVI.N
 				{
-					IN1(XTENSA_INSN_MOVI_N, XTENSA_GRP_MOVE);
+					INSN(XTENSA_INSN_MOVI_N, XTENSA_GRP_MOVE);
 					REGW(in16.ri7.s);
-					IMMR(1, compliment(7, 95, in16.ri7.imm764 << 4 | in16.ri7.imm730));
+					IMMR(7, compliment(7, 95, in16.ri7.imm764 << 4 | in16.ri7.imm730));
 				}
 				else if (in16.ri6.i == 0b10) // BEQZ.N
 				{
-					IN1(XTENSA_INSN_BEQZ_N, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BEQZ_N, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in16.ri6.s);
-					IMMR(1, in16.ri6.imm654 << 4 | in16.ri6.imm630);
+					IMMR(6, in16.ri6.imm654 << 4 | in16.ri6.imm630);
 				}
 				else // BNEZ.N
 				{
-					IN1(XTENSA_INSN_BNEZ_N, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BNEZ_N, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in16.ri6.s);
-					IMMR(1, in16.ri6.imm654 << 4 | in16.ri6.imm630);
+					IMMR(6, in16.ri6.imm654 << 4 | in16.ri6.imm630);
 				}
 				break;
 			case 0b1101: // ST3.N
@@ -256,8 +252,8 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b0001: // RETW.N
 						break;
 					case 0b0010: // BREAK.N
-						IN1(XTENSA_INSN_BREAK_N, XTENSA_GRP_MISC);
-						IMMR(1, in16.rrrn.s);
+						INSN(XTENSA_INSN_BREAK_N, XTENSA_GRP_MISC);
+						IMMR(4, in16.rrrn.s);
 						break;
 					case 0b0011: // NOP.N
 						break;
@@ -305,16 +301,16 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 								switch (in24.callx.n)
 								{
 								case 0b00: // CALLX0
-									IN1(XTENSA_INSN_CALLX0, XTENSA_GRP_CALL);
+									INSN(XTENSA_INSN_CALLX0, XTENSA_GRP_CALL);
 									break;
 								case 0b01: // CALLX4
-									IN1(XTENSA_INSN_CALLX4, XTENSA_GRP_CALL);
+									INSN(XTENSA_INSN_CALLX4, XTENSA_GRP_CALL);
 									break;
 								case 0b10: // CALLX08
-									IN1(XTENSA_INSN_CALLX8, XTENSA_GRP_CALL);
+									INSN(XTENSA_INSN_CALLX8, XTENSA_GRP_CALL);
 									break;
 								case 0b11: // CALLX12
-									IN1(XTENSA_INSN_CALLX12, XTENSA_GRP_CALL);
+									INSN(XTENSA_INSN_CALLX12, XTENSA_GRP_CALL);
 									break;
 								}
 								REGR(in24.callx.s);
@@ -366,9 +362,9 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 							}
 							break;
 						case 0b0100: // BREAK
-							IN1(XTENSA_INSN_BREAK, XTENSA_GRP_MISC);
-							IMMR(1, in24.rrr.s);
-							IMMR(1, in24.rrr.t);
+							INSN(XTENSA_INSN_BREAK, XTENSA_GRP_MISC);
+							IMMR(4, in24.rrr.s);
+							IMMR(4, in24.rrr.t);
 							break;
 						case 0b0101: // SYSCALL
 							break;
@@ -377,41 +373,41 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						case 0b0111: // WAITI
 							break;
 						case 0b1000: // ANY4
-							IN1(XTENSA_INSN_ANY4, XTENSA_GRP_BOOLEAN);
+							INSN(XTENSA_INSN_ANY4, XTENSA_GRP_BOOLEAN);
 							RBW(in24.rrr.t);
 							RBR(in24.rrr.s);
 							break;
 						case 0b1001: // ALL4
-							IN1(XTENSA_INSN_ALL4, XTENSA_GRP_BOOLEAN);
+							INSN(XTENSA_INSN_ALL4, XTENSA_GRP_BOOLEAN);
 							RBW(in24.rrr.t);
 							RBR(in24.rrr.s);
 							break;
 						case 0b1010: // ANY8
-							IN1(XTENSA_INSN_ANY8, XTENSA_GRP_BOOLEAN);
+							INSN(XTENSA_INSN_ANY8, XTENSA_GRP_BOOLEAN);
 							RBW(in24.rrr.t);
 							RBR(in24.rrr.s);
 							break;
 						case 0b1011: // ALL8
-							IN1(XTENSA_INSN_ALL8, XTENSA_GRP_BOOLEAN);
+							INSN(XTENSA_INSN_ALL8, XTENSA_GRP_BOOLEAN);
 							RBW(in24.rrr.t);
 							RBR(in24.rrr.s);
 							break;
 						}
 						break;
 					case 0b0001: // AND
-						IN1(XTENSA_INSN_AND, XTENSA_GRP_BITWISE);
+						INSN(XTENSA_INSN_AND, XTENSA_GRP_BITWISE);
 						REGW(in24.rrr.r);
 						REGR(in24.rrr.s);
 						REGR(in24.rrr.t);
 						break;
 					case 0b0010: // OR
-						IN1(XTENSA_INSN_OR, XTENSA_GRP_BITWISE);
+						INSN(XTENSA_INSN_OR, XTENSA_GRP_BITWISE);
 						REGW(in24.rrr.r);
 						REGR(in24.rrr.s);
 						REGR(in24.rrr.t);
 						break;
 					case 0b0011: // XOR
-						IN1(XTENSA_INSN_XOR, XTENSA_GRP_BITWISE);
+						INSN(XTENSA_INSN_XOR, XTENSA_GRP_BITWISE);
 						REGW(in24.rrr.r);
 						REGR(in24.rrr.s);
 						REGR(in24.rrr.t);
@@ -470,19 +466,19 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						switch (in24.rrr.s)
 						{
 						case 0b0000: // NEG
-							IN1(XTENSA_INSN_NEG, XTENSA_GRP_ARITHMETIC);
+							INSN(XTENSA_INSN_NEG, XTENSA_GRP_ARITHMETIC);
 							REGW(in24.rrr.r);
 							REGR(in24.rrr.t);
 							break;
 						case 0b0001: // ABS
-							IN1(XTENSA_INSN_ABS, XTENSA_GRP_ARITHMETIC);
+							INSN(XTENSA_INSN_ABS, XTENSA_GRP_ARITHMETIC);
 							REGW(in24.rrr.r);
 							REGR(in24.rrr.t);
 							break;
 						}
 						break;
 					case 0b1000: // ADD
-						IN1(XTENSA_INSN_ADD, XTENSA_GRP_ARITHMETIC);
+						INSN(XTENSA_INSN_ADD, XTENSA_GRP_ARITHMETIC);
 						REGW(in24.rrr.r);
 						REGR(in24.rrr.s);
 						REGR(in24.rrr.t);
@@ -491,7 +487,7 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b1010: // ADDX4
 					case 0b1011: // ADDx8
 						insn = XTENSA_INSN_ADDX2 + (in24.rrr.op2 & 0b11) - 1;
-						IN1(insn, XTENSA_GRP_ARITHMETIC);
+						INSN(insn, XTENSA_GRP_ARITHMETIC);
 						REGW(in24.rrr.r);
 						REGR(in24.rrr.s);
 						REGR(in24.rrr.t);
@@ -501,7 +497,7 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b1110: // SUBX4
 					case 0b1111: // SUBX8
 						insn = XTENSA_INSN_SUBX2 + (in24.rrr.op2 & 0b11) - 1;
-						IN1(insn, XTENSA_GRP_ARITHMETIC);
+						INSN(insn, XTENSA_GRP_ARITHMETIC);
 						REGW(in24.rrr.r);
 						REGR(in24.rrr.s);
 						REGR(in24.rrr.t);
@@ -573,31 +569,31 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					switch (in24.rrr.op2)
 					{
 					case 0b0000: // ANDB
-						IN1(XTENSA_INSN_ANDB, XTENSA_GRP_BOOLEAN);
+						INSN(XTENSA_INSN_ANDB, XTENSA_GRP_BOOLEAN);
 						RBW(in24.rrr.r);
 						RBR(in24.rrr.s);
 						RBR(in24.rrr.t);
 						break;
 					case 0b0001: // ANDBC
-						IN1(XTENSA_INSN_ANDBC, XTENSA_GRP_BOOLEAN);
+						INSN(XTENSA_INSN_ANDBC, XTENSA_GRP_BOOLEAN);
 						RBW(in24.rrr.r);
 						RBR(in24.rrr.s);
 						RBR(in24.rrr.t);
 						break;
 					case 0b0010: // ORB
-						IN1(XTENSA_INSN_ORB, XTENSA_GRP_BOOLEAN);
+						INSN(XTENSA_INSN_ORB, XTENSA_GRP_BOOLEAN);
 						RBW(in24.rrr.r);
 						RBR(in24.rrr.s);
 						RBR(in24.rrr.t);
 						break;
 					case 0b0011: // ORBC
-						IN1(XTENSA_INSN_ORBC, XTENSA_GRP_BOOLEAN);
+						INSN(XTENSA_INSN_ORBC, XTENSA_GRP_BOOLEAN);
 						RBW(in24.rrr.r);
 						RBR(in24.rrr.s);
 						RBR(in24.rrr.t);
 						break;
 					case 0b0100: // XORB
-						IN1(XTENSA_INSN_XORB, XTENSA_GRP_BOOLEAN);
+						INSN(XTENSA_INSN_XORB, XTENSA_GRP_BOOLEAN);
 						RBW(in24.rrr.r);
 						RBR(in24.rrr.s);
 						RBR(in24.rrr.t);
@@ -689,19 +685,19 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					switch (in24.rrr.op2)
 					{
 					case 0b0000: // ADD.S
-						IN1(XTENSA_INSN_ADD_S, XTENSA_GRP_FLOATING_POINT);
+						INSN(XTENSA_INSN_ADD_S, XTENSA_GRP_FLOATING_POINT);
 						RFW(in24.rrr.r);
 						RFR(in24.rrr.s);
 						RFR(in24.rrr.t);
 						break;
 					case 0b0001: // SUB.S
-						IN1(XTENSA_INSN_SUB_S, XTENSA_GRP_FLOATING_POINT);
+						INSN(XTENSA_INSN_SUB_S, XTENSA_GRP_FLOATING_POINT);
 						REGW(in24.rrr.r);
 						REGR(in24.rrr.s);
 						REGR(in24.rrr.t);
 						break;
 					case 0b0010: // MUL.S
-						IN1(XTENSA_INSN_MUL_S, XTENSA_GRP_FLOATING_POINT);
+						INSN(XTENSA_INSN_MUL_S, XTENSA_GRP_FLOATING_POINT);
 						REGW(in24.rrr.r);
 						REGR(in24.rrr.s);
 						REGR(in24.rrr.t);
@@ -717,6 +713,10 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b1010: // FLOOR.S
 						break;
 					case 0b1011: // CEIL.S
+						INSN(XTENSA_INSN_CEIL_S, XTENSA_GRP_FLOATING_POINT);
+						REGW(in24.rrr.r);
+						RFR(in24.rrr.s);
+						IMMR(4, in24.rrr.t);
 						break;
 					case 0b1100: // FLOAT.S
 						break;
@@ -728,12 +728,12 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						switch (in24.rrr.t)
 						{
 						case 0b0000: // MOV.S
-							IN1(XTENSA_INSN_MOV_S, XTENSA_GRP_FLOATING_POINT);
+							INSN(XTENSA_INSN_MOV_S, XTENSA_GRP_FLOATING_POINT);
 							RFW(in24.rrr.r);
 							RFR(in24.rrr.s);
 							break;
 						case 0b0001: // ABS.S
-							IN1(XTENSA_INSN_ABS_S, XTENSA_GRP_FLOATING_POINT);
+							INSN(XTENSA_INSN_ABS_S, XTENSA_GRP_FLOATING_POINT);
 							RFW(in24.rrr.r);
 							RFR(in24.rrr.s);
 							break;
@@ -742,7 +742,7 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						case 0b0101: // WFR
 							break;
 						case 0b0110: // NEG.S
-							IN1(XTENSA_INSN_NEG_S, XTENSA_GRP_FLOATING_POINT);
+							INSN(XTENSA_INSN_NEG_S, XTENSA_GRP_FLOATING_POINT);
 							RFW(in24.rrr.r);
 							RFR(in24.rrr.s);
 							break;
@@ -860,16 +860,16 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				case 0b1011: // L32AI
 					break;
 				case 0b1100: // ADDI
-					IN1(XTENSA_INSN_ADDI, XTENSA_GRP_FLOATING_POINT);
+					INSN(XTENSA_INSN_ADDI, XTENSA_GRP_FLOATING_POINT);
 					REGW(in24.rri8.t);
 					REGR(in24.rri8.s);
-					IMMR(1, (int8_t)in24.rri8.imm8);
+					IMMR(8, (int8_t)in24.rri8.imm8);
 					break;
 				case 0b1101: // ADDMI
-					IN1(XTENSA_INSN_ADDMI, XTENSA_GRP_FLOATING_POINT);
+					INSN(XTENSA_INSN_ADDMI, XTENSA_GRP_FLOATING_POINT);
 					REGW(in24.rri8.t);
 					REGR(in24.rri8.s);
-					IMMR(1, (int8_t)in24.rri8.imm8 << 8);
+					IMMR(8, (int8_t)in24.rri8.imm8 << 8);
 					break;
 				case 0b1110: // S32C1I
 					break;
@@ -1084,19 +1084,19 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				switch (in24.call.n)
 				{
 				case 0b00: // CALL0
-					IN1(XTENSA_INSN_CALL0, XTENSA_GRP_CALL);
+					INSN(XTENSA_INSN_CALL0, XTENSA_GRP_CALL);
 					break;
 				case 0b01: // CALL4
-					IN1(XTENSA_INSN_CALL4, XTENSA_GRP_CALL);
+					INSN(XTENSA_INSN_CALL4, XTENSA_GRP_CALL);
 					break;
 				case 0b10: // CALL8
-					IN1(XTENSA_INSN_CALL8, XTENSA_GRP_CALL);
+					INSN(XTENSA_INSN_CALL8, XTENSA_GRP_CALL);
 					break;
 				case 0b11: // CALL12
-					IN1(XTENSA_INSN_CALL12, XTENSA_GRP_CALL);
+					INSN(XTENSA_INSN_CALL12, XTENSA_GRP_CALL);
 					break;
 				}
-				IMMR(1, in24.call.offset);
+				IMMR(18, in24.call.offset);
 				break;
 			case 0b0110: // SI
 				switch (in24.call.n)
@@ -1107,40 +1107,40 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					switch (in24.bri12.m)
 					{
 					case 0b00: // BEQZ
-						IN1(XTENSA_INSN_BEQZ, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BEQZ, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b01: // BNEZ
-						IN1(XTENSA_INSN_BNEZ, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BNEZ, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b10: // BLTZ
-						IN1(XTENSA_INSN_BLTZ, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BLTZ, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b11: // BGEZ
-						IN1(XTENSA_INSN_BGEZ, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BGEZ, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					}
 					REGR(in24.rri8.s);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b10: // BI0
 					switch (in24.bri12.m)
 					{
 					case 0b00: // BEQI
-						IN1(XTENSA_INSN_BEQI, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BEQI, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b01: // BNEI
-						IN1(XTENSA_INSN_BNEI, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BNEI, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b10: // BLTI
-						IN1(XTENSA_INSN_BLTI, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BLTI, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b11: // BGEI
-						IN1(XTENSA_INSN_BGEI, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BGEI, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					}
 					REGR(in24.rri8.s);
-					IMMR(1, B4CONST(in24.rri8.r));
-					IMMR(1, in24.rri8.imm8);
+					IMMR(4, B4CONST(in24.rri8.r));
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b11: // BI1
 					switch (in24.bri12.m)
@@ -1151,14 +1151,14 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						switch (in24.bri8.r)
 						{
 						case 0b0000: // BF
-							IN1(XTENSA_INSN_BF, XTENSA_GRP_BRANCH_RELATIVE);
+							INSN(XTENSA_INSN_BF, XTENSA_GRP_BRANCH_RELATIVE);
 							RBR(in24.rri8.s);
-							IMMR(1, in24.rri8.imm8);
+							IMMR(8, in24.rri8.imm8);
 							break;
 						case 0b0001: // BT
-							IN1(XTENSA_INSN_BT, XTENSA_GRP_BRANCH_RELATIVE);
+							INSN(XTENSA_INSN_BT, XTENSA_GRP_BRANCH_RELATIVE);
 							RBR(in24.rri8.s);
-							IMMR(1, in24.rri8.imm8);
+							IMMR(8, in24.rri8.imm8);
 							break;
 						case 0b1000: // LOOP
 							break;
@@ -1169,16 +1169,16 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						}
 						break;
 					case 0b10: // BLTUI
-						IN1(XTENSA_INSN_BLTUI, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BLTUI, XTENSA_GRP_BRANCH_RELATIVE);
 						REGR(in24.bri8.s);
-						IMMR(1, B4CONSTU(in24.bri8.r));
-						IMMR(1, in24.bri8.imm8);
+						IMMR(4, B4CONSTU(in24.bri8.r));
+						IMMR(8, in24.bri8.imm8);
 						break;
 					case 0b11: // BGEUI
-						IN1(XTENSA_INSN_BGEUI, XTENSA_GRP_BRANCH_RELATIVE);
+						INSN(XTENSA_INSN_BGEUI, XTENSA_GRP_BRANCH_RELATIVE);
 						REGR(in24.bri8.s);
-						IMMR(1, B4CONSTU(in24.bri8.r));
-						IMMR(1, in24.bri8.imm8);
+						IMMR(4, B4CONSTU(in24.bri8.r));
+						IMMR(8, in24.bri8.imm8);
 						break;
 					}
 					break;
@@ -1188,90 +1188,90 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				switch (in24.rri8.r)
 				{
 				case 0b0000: // BNONE
-					IN1(XTENSA_INSN_BNONE, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BNONE, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b0001: // BEQ
-					IN1(XTENSA_INSN_BEQ, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BEQ, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b0010: // BLT
-					IN1(XTENSA_INSN_BLT, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BLT, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b0011: // BLTU
-					IN1(XTENSA_INSN_BLTU, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BLTU, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b0100: // BALL
-					IN1(XTENSA_INSN_BALL, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BALL, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b0101: // BBC
-					IN1(XTENSA_INSN_BBC, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BBC, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b0110: // BBCI
 				case 0b0111:
-					IN1(XTENSA_INSN_BBCI, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BBCI, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
-					IMMR(1, in24.rri8.t | ((in24.rri8.r & 1) << 4));
-					IMMR(1, in24.rri8.imm8);
+					IMMR(5, in24.rri8.t | ((in24.rri8.r & 1) << 4));
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b1000: // BANY
-					IN1(XTENSA_INSN_BANY, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BANY, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b1001: // BNE
-					IN1(XTENSA_INSN_BNE, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BNE, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b1010: // BGE
-					IN1(XTENSA_INSN_BGE, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BGE, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b1011: // BGEU
-					IN1(XTENSA_INSN_BGEU, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BGEU, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b1100: // BNALL
-					IN1(XTENSA_INSN_BNALL, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BNALL, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b1101: // BBS
-					IN1(XTENSA_INSN_BBS, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BBS, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
 					REGR(in24.rri8.t);
-					IMMR(1, in24.rri8.imm8);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b1110: // BBSI
 				case 0b1111:
-					IN1(XTENSA_INSN_BBSI, XTENSA_GRP_BRANCH_RELATIVE);
+					INSN(XTENSA_INSN_BBSI, XTENSA_GRP_BRANCH_RELATIVE);
 					REGR(in24.rri8.s);
-					IMMR(1, in24.rri8.t | ((in24.rri8.r & 1) << 4));
-					IMMR(1, in24.rri8.imm8);
+					IMMR(5, in24.rri8.t | ((in24.rri8.r & 1) << 4));
+					IMMR(8, in24.rri8.imm8);
 					break;
 				}
 				break;

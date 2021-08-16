@@ -39,7 +39,11 @@ extern "C"
 			int32_t imm;	  ///< immediate value for IMM operand
 		};
 
-		/// size of this operand (in bytes).
+		/// size of this operand (in bits). This is the number
+		/// of bits in the encoded instruction that comprise the
+		/// operand. The numeric value of the operand may be
+		/// more than this (for example, B4CONST encoded immediate
+		/// operands).
 		uint8_t size;
 
 		/// How is this operand accessed? (READ, WRITE or READ|WRITE)
