@@ -103,10 +103,10 @@ typedef union xinsn16
 	struct ri6
 	{
 		uint8_t op0 : 4;
-		uint8_t imm754 : 3;
+		uint8_t imm654 : 2;
 		uint8_t i : 2;
 		uint8_t s : 4;
-		uint8_t imm730 : 4;
+		uint8_t imm630 : 4;
 	} ri6;
 } xinsn16;
 
@@ -179,6 +179,19 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 	group1 = a;         \
 	group2 = b;         \
 	group3 = c;
+#define B4CONST(x) (                                    \
+	(x) == 0 ? -1 : (x) < 9			   ? (x)            \
+				: (x) == 9			   ? 10             \
+				: (x) == 10			   ? 12             \
+				: (x) >= 11 && (x) < 16 ? (1 << ((x)-7)) \
+									   : 0)
+#define B4CONSTU(x) (                                      \
+	(x) == 0 ? 32768 : (x) == 1			  ? 65536          \
+				   : (x) < 9			  ? (x)            \
+				   : (x) == 9			  ? 10             \
+				   : (x) == 10			  ? 12             \
+				   : (x) >= 11 && (x) < 16 ? (1 << ((x)-7)) \
+										  : 0)
 
 	xtensa_insn_group group1 = XTENSA_GRP_INVALID;
 	xtensa_insn_group group2 = XTENSA_GRP_INVALID;
@@ -219,9 +232,15 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				}
 				else if (in16.ri6.i == 0b10) // BEQZ.N
 				{
+					IN1(XTENSA_INSN_BEQZ_N, XTENSA_GRP_BRANCH_RELATIVE);
+					REGR(in16.ri6.s);
+					IMMR(1, in16.ri6.imm654 << 4 | in16.ri6.imm630);
 				}
 				else // BNEZ.N
 				{
+					IN1(XTENSA_INSN_BNEZ_N, XTENSA_GRP_BRANCH_RELATIVE);
+					REGR(in16.ri6.s);
+					IMMR(1, in16.ri6.imm654 << 4 | in16.ri6.imm630);
 				}
 				break;
 			case 0b1101: // ST3.N
@@ -237,6 +256,8 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b0001: // RETW.N
 						break;
 					case 0b0010: // BREAK.N
+						IN1(XTENSA_INSN_BREAK_N, XTENSA_GRP_MISC);
+						IMMR(1, in16.rrrn.s);
 						break;
 					case 0b0011: // NOP.N
 						break;
@@ -340,6 +361,9 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 							}
 							break;
 						case 0b0100: // BREAK
+							IN1(XTENSA_INSN_BREAK, XTENSA_GRP_MISC);
+							IMMR(1, in24.rrr.s);
+							IMMR(1, in24.rrr.t);
 							break;
 						case 0b0101: // SYSCALL
 							break;
@@ -1073,27 +1097,40 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					switch (in24.bri12.m)
 					{
 					case 0b00: // BEQZ
+						IN1(XTENSA_INSN_BEQZ, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b01: // BNEZ
+						IN1(XTENSA_INSN_BNEZ, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b10: // BLTZ
+						IN1(XTENSA_INSN_BLTZ, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b11: // BGEZ
+						IN1(XTENSA_INSN_BGEZ, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					}
+					REGR(in24.rri8.s);
+					IMMR(1, in24.rri8.imm8);
 					break;
 				case 0b10: // BI0
 					switch (in24.bri12.m)
 					{
 					case 0b00: // BEQI
+						IN1(XTENSA_INSN_BEQI, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b01: // BNEI
+						IN1(XTENSA_INSN_BNEI, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b10: // BLTI
+						IN1(XTENSA_INSN_BLTI, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					case 0b11: // BGEI
+						IN1(XTENSA_INSN_BGEI, XTENSA_GRP_BRANCH_RELATIVE);
 						break;
 					}
+					REGR(in24.rri8.s);
+					IMMR(1, B4CONST(in24.rri8.r));
+					IMMR(1, in24.rri8.imm8);
 					break;
 				case 0b11: // BI1
 					switch (in24.bri12.m)
@@ -1104,8 +1141,14 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						switch (in24.bri8.r)
 						{
 						case 0b0000: // BF
+							IN1(XTENSA_INSN_BF, XTENSA_GRP_BRANCH_RELATIVE);
+							RBR(in24.rri8.s);
+							IMMR(1, in24.rri8.imm8);
 							break;
 						case 0b0001: // BT
+							IN1(XTENSA_INSN_BT, XTENSA_GRP_BRANCH_RELATIVE);
+							RBR(in24.rri8.s);
+							IMMR(1, in24.rri8.imm8);
 							break;
 						case 0b1000: // LOOP
 							break;
@@ -1116,8 +1159,16 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						}
 						break;
 					case 0b10: // BLTUI
+						IN1(XTENSA_INSN_BLTUI, XTENSA_GRP_BRANCH_RELATIVE);
+						REGR(in24.bri8.s);
+						IMMR(1, B4CONSTU(in24.bri8.r));
+						IMMR(1, in24.bri8.imm8);
 						break;
 					case 0b11: // BGEUI
+						IN1(XTENSA_INSN_BGEUI, XTENSA_GRP_BRANCH_RELATIVE);
+						REGR(in24.bri8.s);
+						IMMR(1, B4CONSTU(in24.bri8.r));
+						IMMR(1, in24.bri8.imm8);
 						break;
 					}
 					break;

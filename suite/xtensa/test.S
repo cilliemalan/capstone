@@ -75,6 +75,107 @@ _bbsi	a1,	31,	0
 
 _beq	a1,	a15,	0
 
+_beqi	a1,	-1,	0
+_beqi	a2,	1,	0
+_beqi	a3,	2,	0
+_beqi	a4,	3,	0
+_beqi	a5,	4,	0
+_beqi	a6,	8,	0
+_beqi	a7,	10,	0
+_beqi	a8,	12,	0
+_beqi	a9,	16,	0
+_beqi	a10,	32,	0
+_beqi	a11,	64,	0
+_beqi	a12,	128,	0
+_beqi	a13,	256,	0
+
+_beqz	a1,	0
+_beqz	a2,	0
+_beqz	a3,	0
+_beqz	a4,	0
+
+_bf	b0,	0
+_bf	b15,	0
+
+_bge	a0,	a1,	0
+_bge	a10,	a11,	0
+
+_bgei	a10,	-1,	0
+_bgei	a11,	1,	0
+_bgei	a12,	128,	0
+_bgei	a13,	256,	0
+
+_bgeu	a1,	a2,	0
+
+_bgeui	a4,	65536,	0
+_bgeui	a4,	32768,	0
+_bgeui	a3,	2,	0
+_bgeui	a4,	3,	0
+_bgeui	a5,	4,	0
+_bgeui	a6,	8,	0
+_bgeui	a7,	10,	0
+_bgeui	a8,	12,	0
+_bgeui	a9,	16,	0
+_bgeui	a10,	32,	0
+_bgeui	a11,	64,	0
+_bgeui	a12,	128,	0
+_bgeui	a13,	256,	0
+
+_bgez	a0,	0
+_bgez	a15,	0
+
+_blt	a0,	a1,	0
+_blt	a11,	a13,	0
+
+_blti	a0,	-1,	0
+_blti	a0,	1,	0
+_blti	a0,	128,	0
+_blti	a0,	12,	0
+
+_bltu	a0,	a1,	0
+_bltu	a11,	a13,	0
+
+_bltui	a0,	65536,	0
+_bltui	a4,	32768,	0
+_bltui	a8,	5,	0
+_bltui	a12,	12,	0
+
+_bltz	a0,	0
+_bltz	a10,	0
+
+_bnall	a0,	a1,	0
+_bnall	a2,	a3,	0
+
+_bne	a0,	a1,	0
+
+_bnei	a0,	-1,	0
+_bnei	a1,	1,	0
+
+_bnez	a0,	0
+_bnez	a10,	0
+
+_bnez.n	a0,	0
+_bnez.n	a6,	0
+_bnez.n	a10,	0
+_bnez.n	a15,	0
+
+_bnone	a0,	a1,	0
+_bnone	a10,	a11,	0
+
+break	1,	2
+break	0,	0
+break	15,	15
+break	0,	15
+break	15,	0
+
+break.n	0
+break.n	2
+break.n	10
+break.n	15
+
+_bt	b0,	0
+_bt	b15,	0
+
 _movi.n	a0,	-17
 _movi.n	a0,	-1
 _movi.n	a0,	0
