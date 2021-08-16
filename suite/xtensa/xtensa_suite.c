@@ -190,7 +190,7 @@ int main()
     // run through the files
     bool more_lines;
     bool more_binary;
-    uint64_t address;
+    uint64_t address = 0;
     int errors = 0;
     char dline[64];
     char sline[64];
@@ -252,6 +252,7 @@ int main()
             }
             badvance = ninsn ? insn->size : 0;
             binary += badvance;
+            address += badvance;
             binary_len -= badvance;
             skippingdata = more_binary && insn->id == XTENSA_INSN_INVALID;
 
