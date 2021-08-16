@@ -186,6 +186,18 @@ _callx4	a1
 _callx8	a2
 _callx12	a3
 
+ceil.s	a0,	f0,	4
+ceil.s	a1,	f1,	0
+ceil.s	a3,	f3,	15
+ceil.s	a15,	f15,	10
+
+clamps	a2,	a1,	7
+clamps	a3,	a2,	8
+clamps	a4,	a3,	9
+clamps	a5,	a5,	10
+clamps	a6,	a9,	21
+clamps	a7,	a10,	22
+
 _movi.n	a0,	-17
 _movi.n	a0,	-1
 _movi.n	a0,	0

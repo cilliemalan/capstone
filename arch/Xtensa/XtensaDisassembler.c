@@ -624,6 +624,10 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b0010: // SEXT
 						break;
 					case 0b0011: // CLAMPS
+						INSN(XTENSA_INSN_CLAMPS, XTENSA_GRP_DEBUG);
+						REGR(in24.rrr.r);
+						REGR(in24.rrr.s);
+						IMMR(4, in24.rrr.t + 7);
 						break;
 					case 0b0100: // MIN
 						break;
@@ -1139,7 +1143,7 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						break;
 					}
 					REGR(in24.rri8.s);
-					IMMR(4, B4CONST(in24.rri8.r));
+					IMMR(4, b4const(in24.rri8.r));
 					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b11: // BI1
@@ -1171,13 +1175,13 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b10: // BLTUI
 						INSN(XTENSA_INSN_BLTUI, XTENSA_GRP_BRANCH_RELATIVE);
 						REGR(in24.bri8.s);
-						IMMR(4, B4CONSTU(in24.bri8.r));
+						IMMR(4, b4constu(in24.bri8.r));
 						IMMR(8, in24.bri8.imm8);
 						break;
 					case 0b11: // BGEUI
 						INSN(XTENSA_INSN_BGEUI, XTENSA_GRP_BRANCH_RELATIVE);
 						REGR(in24.bri8.s);
-						IMMR(4, B4CONSTU(in24.bri8.r));
+						IMMR(4, b4constu(in24.bri8.r));
 						IMMR(8, in24.bri8.imm8);
 						break;
 					}
