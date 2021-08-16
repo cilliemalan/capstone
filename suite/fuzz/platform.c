@@ -330,6 +330,13 @@ struct platform platforms[] = {
         "ppc+qpx",
         "ppc64beqpx"
     },
+    {
+        //item 28
+        CS_ARCH_XTENSA,
+        (cs_mode)0,
+        "Xtensa",
+        "xtensa"
+    },
 
     // dummy entry to mark the end of this array.
     // DO NOT DELETE THIS

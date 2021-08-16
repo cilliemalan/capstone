@@ -281,6 +281,16 @@ ifneq (,$(findstring wasm,$(CAPSTONE_ARCHS)))
 	LIBOBJ_WASM += $(LIBSRC_WASM:%.c=$(OBJDIR)/%.o)
 endif
 
+DEP_XTENSA =
+DEP_XTENSA += $(wildcard arch/Xtensa/Xtensa*.inc)
+
+LIBOBJ_XTENSA =
+ifneq (,$(findstring xtensa,$(CAPSTONE_ARCHS)))
+	CFLAGS += -DCAPSTONE_HAS_XTENSA
+	LIBSRC_XTENSA += $(wildcard arch/Xtensa/Xtensa*.c)
+	LIBOBJ_XTENSA += $(LIBSRC_XTENSA:%.c=$(OBJDIR)/%.o)
+endif
+
 
 DEP_MOS65XX =
 DEP_MOS65XX += $(wildcard arch/MOS65XX/MOS65XX*.inc)
@@ -307,7 +317,7 @@ endif
 LIBOBJ =
 LIBOBJ += $(OBJDIR)/cs.o $(OBJDIR)/utils.o $(OBJDIR)/SStream.o $(OBJDIR)/MCInstrDesc.o $(OBJDIR)/MCRegisterInfo.o
 LIBOBJ += $(LIBOBJ_ARM) $(LIBOBJ_ARM64) $(LIBOBJ_M68K) $(LIBOBJ_MIPS) $(LIBOBJ_PPC) $(LIBOBJ_RISCV) $(LIBOBJ_SPARC) $(LIBOBJ_SYSZ)
-LIBOBJ += $(LIBOBJ_X86) $(LIBOBJ_XCORE) $(LIBOBJ_TMS320C64X) $(LIBOBJ_M680X) $(LIBOBJ_EVM) $(LIBOBJ_MOS65XX) $(LIBOBJ_WASM) $(LIBOBJ_BPF)
+LIBOBJ += $(LIBOBJ_X86) $(LIBOBJ_XCORE) $(LIBOBJ_TMS320C64X) $(LIBOBJ_M680X) $(LIBOBJ_EVM) $(LIBOBJ_MOS65XX) $(LIBOBJ_WASM) $(LIBOBJ_XTENSA) $(LIBOBJ_BPF)
 LIBOBJ += $(OBJDIR)/MCInst.o
 
 
@@ -442,6 +452,7 @@ $(LIBOBJ_M680X): $(DEP_M680X)
 $(LIBOBJ_EVM): $(DEP_EVM)
 $(LIBOBJ_RISCV): $(DEP_RISCV)
 $(LIBOBJ_WASM): $(DEP_WASM)
+$(LIBOBJ_XTENSA): $(DEP_XTENSA)
 $(LIBOBJ_MOS65XX): $(DEP_MOS65XX)
 $(LIBOBJ_BPF): $(DEP_BPF)
 
@@ -530,12 +541,12 @@ dist:
 	git archive --format=zip --prefix=capstone-$(DIST_VERSION)/ $(TAG) > capstone-$(DIST_VERSION).zip
 
 TESTS  = test_basic test_detail test_arm test_arm64 test_m68k test_mips test_ppc test_sparc	
-TESTS += test_systemz test_x86 test_xcore test_iter test_evm test_riscv test_mos65xx test_wasm test_bpf
+TESTS += test_systemz test_x86 test_xcore test_iter test_evm test_riscv test_mos65xx test_wasm test_bpf test_xtensa
 TESTS += test_basic.static test_detail.static test_arm.static test_arm64.static
 TESTS += test_m68k.static test_mips.static test_ppc.static test_sparc.static
 TESTS += test_systemz.static test_x86.static test_xcore.static test_m680x.static
 TESTS += test_skipdata test_skipdata.static test_iter.static test_evm.static test_riscv.static
-TESTS += test_mos65xx.static test_wasm.static test_bpf.static
+TESTS += test_mos65xx.static test_wasm.static test_xtensa.static test_bpf.static
 check: $(TESTS) fuzztest fuzzallcorp
 test_%:
 	./tests/$@ > /dev/null && echo OK || echo FAILED

@@ -64,6 +64,9 @@ int main()
 	if (cs_support(CS_ARCH_RISCV)) {
 		printf("riscv=1 ");
 	}
+	if (cs_support(CS_ARCH_XTENSA)) {
+		printf("xtensa=1 ");
+	}
 	if (cs_support(CS_SUPPORT_DIET)) {
 		printf("diet=1 ");
 	}

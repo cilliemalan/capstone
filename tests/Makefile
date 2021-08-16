@@ -129,6 +129,10 @@ ifneq (,$(findstring bpf,$(CAPSTONE_ARCHS)))
 CFLAGS += -DCAPSTONE_HAS_BPF
 SOURCES += test_bpf.c
 endif
+ifneq (,$(findstring xtensa,$(CAPSTONE_ARCHS)))
+CFLAGS += -DCAPSTONE_HAS_XTENSA
+SOURCES += test_xtensa.c
+endif
 
 OBJS = $(addprefix $(OBJDIR)/,$(SOURCES:.c=.o))
 BINARY = $(addprefix $(TESTDIR)/,$(SOURCES:.c=$(BIN_EXT)))
