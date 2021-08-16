@@ -662,9 +662,13 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						break;
 					}
 					break;
-				case 0b0100: // EXTUI
-					break;
+				case 0b0100:
 				case 0b0101: // EXTUI
+					INSN(XTENSA_INSN_EXTUI, XTENSA_GRP_ARITHMETIC);
+					REGW(in24.rrr.r);
+					REGR(in24.rrr.t);
+					IMMR(5, in24.rrr.s | ((in24.rrr.op1 & 1) << 4));
+					IMMR(4, in24.rrr.op2 + 1);
 					break;
 				case 0b0110: // CUST0
 					break;
@@ -722,6 +726,10 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b1001: // TRUNC.S
 						break;
 					case 0b1010: // FLOOR.S
+						INSN(XTENSA_INSN_FLOOR_S, XTENSA_GRP_FLOATING_POINT);
+						REGW(in24.rrr.r);
+						RFR(in24.rrr.s);
+						IMMR(4, in24.rrr.t);
 						break;
 					case 0b1011: // CEIL.S
 						INSN(XTENSA_INSN_CEIL_S, XTENSA_GRP_FLOATING_POINT);
@@ -730,10 +738,22 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						IMMR(4, in24.rrr.t);
 						break;
 					case 0b1100: // FLOAT.S
+						INSN(XTENSA_INSN_FLOAT_S, XTENSA_GRP_FLOATING_POINT);
+						RFW(in24.rrr.r);
+						REGR(in24.rrr.s);
+						IMMR(4, in24.rrr.t);
 						break;
 					case 0b1101: // UFLOAT.S
+						INSN(XTENSA_INSN_UFLOAT_S, XTENSA_GRP_FLOATING_POINT);
+						RFW(in24.rrr.r);
+						REGR(in24.rrr.s);
+						IMMR(4, in24.rrr.t);
 						break;
 					case 0b1110: // UTRUNC.S
+						INSN(XTENSA_INSN_UTRUNC_S, XTENSA_GRP_FLOATING_POINT);
+						REGW(in24.rrr.r);
+						RFR(in24.rrr.s);
+						IMMR(4, in24.rrr.t);
 						break;
 					case 0b1111: // FP1OP
 						switch (in24.rrr.t)
@@ -1199,7 +1219,7 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b00: // ENTRY
 						INSN(XTENSA_INSN_ENTRY, XTENSA_GRP_CALL);
 						REGR(in24.bri12.s);
-						IMMR(8, in24.bri12.imm12);
+						IMMR(8, in24.bri12.imm12 * 8);
 						break;
 					case 0b01: // B1
 						switch (in24.bri8.r)

@@ -200,9 +200,35 @@ clamps	a7,	a10,	22
 
 dsync	
 
+# entry	a1,	16
+# entry	a2,	24
+# entry	a3,	32
+# entry	a4,	8000
+# entry	a5,	32760
+
+esync	
+excw	
+
+extui	a0,	a13,	4,	16
+extui	a4,	a12,	1,	10
+extui	a0,	a10,	31,	1
+extui	a6,	a15,	30,	1
+extui	a0,	a9,	0,	10
+extui	a9,	a10,	1,	16
+
+extw	
+
+float.s	f0,	a15,	0
+float.s	f1,	a14,	1
+float.s	f15,	a1,	15
+
+floor.s	a0,	f15,	0
+floor.s	a1,	f14,	1
+floor.s	a15,	f1,	15
+
 _movi.n	a0,	-17
-_movi.n	a0,	-1
-_movi.n	a0,	0
-_movi.n	a0,	10
-_movi.n	a0,	95
-_movi.n	a0,	-32
+_movi.n	a1,	-1
+_movi.n	a2,	0
+_movi.n	a3,	10
+_movi.n	a4,	95
+_movi.n	a5,	-32
