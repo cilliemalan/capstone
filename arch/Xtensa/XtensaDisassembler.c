@@ -323,18 +323,25 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 							switch (in24.rrr.t)
 							{
 							case 0b0000: // ISYNC
+								INSN(XTENSA_INSN_ISYNC, XTENSA_GRP_PROCESSOR_CONTROL);
 								break;
 							case 0b0001: // RSYNC
+								INSN(XTENSA_INSN_RSYNC, XTENSA_GRP_PROCESSOR_CONTROL);
 								break;
 							case 0b0010: // ESYNC
+								INSN(XTENSA_INSN_ESYNC, XTENSA_GRP_PROCESSOR_CONTROL);
 								break;
 							case 0b0011: // DSYNC
+								INSN(XTENSA_INSN_DSYNC, XTENSA_GRP_PROCESSOR_CONTROL);
 								break;
 							case 0b1000: // EXCW
+								INSN(XTENSA_INSN_EXCW, XTENSA_GRP_PROCESSOR_CONTROL);
 								break;
 							case 0b1100: // MEMW
+								INSN(XTENSA_INSN_MEMW, XTENSA_GRP_PROCESSOR_CONTROL);
 								break;
 							case 0b1101: // EXTW
+								INSN(XTENSA_INSN_EXTW, XTENSA_GRP_PROCESSOR_CONTROL);
 								break;
 							}
 							break;
@@ -1190,6 +1197,9 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					switch (in24.bri12.m)
 					{
 					case 0b00: // ENTRY
+						INSN(XTENSA_INSN_ENTRY, XTENSA_GRP_CALL);
+						REGR(in24.bri12.s);
+						IMMR(8, in24.bri12.imm12);
 						break;
 					case 0b01: // B1
 						switch (in24.bri8.r)

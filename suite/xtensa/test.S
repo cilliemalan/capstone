@@ -198,6 +198,8 @@ clamps	a5,	a5,	10
 clamps	a6,	a9,	21
 clamps	a7,	a10,	22
 
+dsync	
+
 _movi.n	a0,	-17
 _movi.n	a0,	-1
 _movi.n	a0,	0
