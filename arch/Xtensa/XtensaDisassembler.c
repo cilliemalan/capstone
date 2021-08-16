@@ -805,56 +805,96 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				case 0b0110: // S32I
 					break;
 				case 0b0111: // CACHE
-					switch (in24.rri4.t)
+					if (in24.rri4.t < 0b1000)
 					{
-					case 0b0000: // DPFR
-						break;
-					case 0b0001: // DPFW
-						break;
-					case 0b0010: // DPFRO
-						break;
-					case 0b0011: // DPFWO
-						break;
-					case 0b0100: // DHWB
-						break;
-					case 0b0101: // DHWBI
-						break;
-					case 0b0110: // DHI
-						break;
-					case 0b0111: // DII
-						break;
-					case 0b1000: // DCE
-						switch (in24.rri4.op1)
+						switch (in24.rri4.t)
 						{
-						case 0b0000: // DPFL
+						case 0b0000: // DPFR
+							INSN(XTENSA_INSN_DPFR, XTENSA_GRP_CACHE);
 							break;
-						case 0b0010: // DHU
+						case 0b0001: // DPFW
+							INSN(XTENSA_INSN_DPFW, XTENSA_GRP_CACHE);
 							break;
-						case 0b0011: // DIU
+						case 0b0010: // DPFRO
+							INSN(XTENSA_INSN_DPFRO, XTENSA_GRP_CACHE);
 							break;
-						case 0b0100: // DIWB
+						case 0b0011: // DPFWO
+							INSN(XTENSA_INSN_DPFWO, XTENSA_GRP_CACHE);
 							break;
-						case 0b0101: // DIWBI
+						case 0b0100: // DHWB
+							INSN(XTENSA_INSN_DHWB, XTENSA_GRP_CACHE);
+							break;
+						case 0b0101: // DHWBI
+							INSN(XTENSA_INSN_DHWBI, XTENSA_GRP_CACHE);
+							break;
+						case 0b0110: // DHI
+							INSN(XTENSA_INSN_DHI, XTENSA_GRP_CACHE);
+							break;
+						case 0b0111: // DII
+							INSN(XTENSA_INSN_DII, XTENSA_GRP_CACHE);
 							break;
 						}
-						break;
-					case 0b1100: // IPF
-						break;
-					case 0b1101: // ICE
-						switch (in24.rri4.op1)
+						REGR(in24.rri8.s);
+						IMMR(8, in24.rri8.imm8 * 4);
+					}
+					else
+					{
+						switch (in24.rri4.t)
 						{
-						case 0b0000: // IPFL
+						case 0b1000: // DCE
+							switch (in24.rri4.op1)
+							{
+							case 0b0000: // DPFL
+								INSN(XTENSA_INSN_DPFL, XTENSA_GRP_CACHE);
+								break;
+							case 0b0010: // DHU
+								INSN(XTENSA_INSN_DHU, XTENSA_GRP_CACHE);
+								break;
+							case 0b0011: // DIU
+								INSN(XTENSA_INSN_DIU, XTENSA_GRP_CACHE);
+								break;
+							case 0b0100: // DIWB
+								INSN(XTENSA_INSN_DIWB, XTENSA_GRP_CACHE);
+								break;
+							case 0b0101: // DIWBI
+								INSN(XTENSA_INSN_DIWBI, XTENSA_GRP_CACHE);
+								break;
+							}
+							REGR(in24.rri4.s * 4);
+							IMMR(4, in24.rri4.imm4);
 							break;
-						case 0b0010: // IHU
+						case 0b1100: // IPF
+							INSN(XTENSA_INSN_IPF, XTENSA_GRP_CACHE);
+							REGR(in24.rri8.s);
+							IMMR(8, in24.rri8.imm8 * 4);
 							break;
-						case 0b0011: // IIU
+						case 0b1101: // ICE
+							switch (in24.rri4.op1)
+							{
+							case 0b0000: // IPFL
+								INSN(XTENSA_INSN_IPFL, XTENSA_GRP_CACHE);
+								break;
+							case 0b0010: // IHU
+								INSN(XTENSA_INSN_IHU, XTENSA_GRP_CACHE);
+								break;
+							case 0b0011: // IIU
+								INSN(XTENSA_INSN_IIU, XTENSA_GRP_CACHE);
+								break;
+							}
+							REGR(in24.rri4.s * 4);
+							IMMR(4, in24.rri4.imm4);
+							break;
+						case 0b1110: // IHI
+							INSN(XTENSA_INSN_IHI, XTENSA_GRP_CACHE);
+							REGR(in24.rri8.s);
+							IMMR(8, in24.rri8.imm8 * 4);
+							break;
+						case 0b1111: // III
+							INSN(XTENSA_INSN_III, XTENSA_GRP_CACHE);
+							REGR(in24.rri8.s);
+							IMMR(8, in24.rri8.imm8 * 4);
 							break;
 						}
-						break;
-					case 0b1110: // IHI
-						break;
-					case 0b1111: // III
-						break;
 					}
 					break;
 				case 0b1001: // L16SI
