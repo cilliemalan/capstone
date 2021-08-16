@@ -179,19 +179,19 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 	group1 = a;         \
 	group2 = b;         \
 	group3 = c;
-#define B4CONST(x) (                                    \
-	(x) == 0 ? -1 : (x) < 9			   ? (x)            \
-				: (x) == 9			   ? 10             \
-				: (x) == 10			   ? 12             \
+#define B4CONST(x) (                                     \
+	(x) == 0 ? -1 : (x) < 9				? (x)            \
+				: (x) == 9				? 10             \
+				: (x) == 10				? 12             \
 				: (x) >= 11 && (x) < 16 ? (1 << ((x)-7)) \
-									   : 0)
-#define B4CONSTU(x) (                                      \
-	(x) == 0 ? 32768 : (x) == 1			  ? 65536          \
-				   : (x) < 9			  ? (x)            \
-				   : (x) == 9			  ? 10             \
-				   : (x) == 10			  ? 12             \
+										: 0)
+#define B4CONSTU(x) (                                       \
+	(x) == 0 ? 32768 : (x) == 1			   ? 65536          \
+				   : (x) < 9			   ? (x)            \
+				   : (x) == 9			   ? 10             \
+				   : (x) == 10			   ? 12             \
 				   : (x) >= 11 && (x) < 16 ? (1 << ((x)-7)) \
-										  : 0)
+										   : 0)
 
 	xtensa_insn_group group1 = XTENSA_GRP_INVALID;
 	xtensa_insn_group group2 = XTENSA_GRP_INVALID;
@@ -305,14 +305,19 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 								switch (in24.callx.n)
 								{
 								case 0b00: // CALLX0
+									IN1(XTENSA_INSN_CALLX0, XTENSA_GRP_CALL);
 									break;
 								case 0b01: // CALLX4
+									IN1(XTENSA_INSN_CALLX4, XTENSA_GRP_CALL);
 									break;
 								case 0b10: // CALLX08
+									IN1(XTENSA_INSN_CALLX8, XTENSA_GRP_CALL);
 									break;
 								case 0b11: // CALLX12
+									IN1(XTENSA_INSN_CALLX12, XTENSA_GRP_CALL);
 									break;
 								}
+								REGR(in24.callx.s);
 								break;
 							}
 							break;
@@ -1079,14 +1084,19 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				switch (in24.call.n)
 				{
 				case 0b00: // CALL0
+					IN1(XTENSA_INSN_CALL0, XTENSA_GRP_CALL);
 					break;
 				case 0b01: // CALL4
+					IN1(XTENSA_INSN_CALL4, XTENSA_GRP_CALL);
 					break;
 				case 0b10: // CALL8
+					IN1(XTENSA_INSN_CALL8, XTENSA_GRP_CALL);
 					break;
 				case 0b11: // CALL12
+					IN1(XTENSA_INSN_CALL12, XTENSA_GRP_CALL);
 					break;
 				}
+				IMMR(1, in24.call.offset);
 				break;
 			case 0b0110: // SI
 				switch (in24.call.n)

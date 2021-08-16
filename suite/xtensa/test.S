@@ -176,6 +176,16 @@ break.n	15
 _bt	b0,	0
 _bt	b15,	0
 
+_call0	0
+_call4	0
+_call8	0
+_call12	0
+
+_callx0	a0
+_callx4	a1
+_callx8	a2
+_callx12	a3
+
 _movi.n	a0,	-17
 _movi.n	a0,	-1
 _movi.n	a0,	0
