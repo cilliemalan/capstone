@@ -244,7 +244,14 @@ int main()
             more_binary = ninsn != 0;
             if (more_binary)
             {
-                snprintf(dline, sizeof(dline), "%s\t%s", insn->mnemonic, insn->op_str);
+                if (insn->op_str[0])
+                {
+                    snprintf(dline, sizeof(dline), "%s\t%s", insn->mnemonic, insn->op_str);
+                }
+                else
+                {
+                    snprintf(dline, sizeof(dline), "%s", insn->mnemonic);
+                }
             }
             else
             {

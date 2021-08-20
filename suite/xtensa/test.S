@@ -226,6 +226,29 @@ floor.s	a0,	f15,	0
 floor.s	a1,	f14,	1
 floor.s	a15,	f1,	15
 
+idtlb	a0
+
+# iiu	a0,	0
+# iiu	a1,	4
+# iiu	a15,	240
+
+ill
+ill.n
+
+# ipf	a0,	0
+# ipf	a1,	4
+# ipf	a2,	1000
+# ipf	a3,	1020
+
+# ipfl	a0,	0
+# ipfl	a1,	4
+# ipfl	a3,	240
+
+isync
+
+_j	0
+_jx	a0
+
 _movi.n	a0,	-17
 _movi.n	a1,	-1
 _movi.n	a2,	0

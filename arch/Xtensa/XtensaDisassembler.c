@@ -248,16 +248,32 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					switch (in16.rrrn.t)
 					{
 					case 0b0000: // RET.N
+						if (in16.rrrn.s == 0)
+						{
+							INSN(XTENSA_INSN_RET_N, XTENSA_GRP_MISC);
+						}
 						break;
 					case 0b0001: // RETW.N
+						if (in16.rrrn.s == 0)
+						{
+							INSN(XTENSA_INSN_RETW_N, XTENSA_GRP_MISC);
+						}
 						break;
 					case 0b0010: // BREAK.N
 						INSN(XTENSA_INSN_BREAK_N, XTENSA_GRP_MISC);
 						IMMR(4, in16.rrrn.s);
 						break;
 					case 0b0011: // NOP.N
+						if (in16.rrrn.s == 0)
+						{
+							INSN(XTENSA_INSN_NOP_N, XTENSA_GRP_EXCEPTION);
+						}
 						break;
 					case 0b0110: // ILL.N
+						if (in16.rrrn.s == 0)
+						{
+							INSN(XTENSA_INSN_ILL_N, XTENSA_GRP_EXCEPTION);
+						}
 						break;
 					}
 					break;
@@ -286,17 +302,29 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 							switch (in24.callx.m)
 							{
 							case 0b00: // ILL
+								INSN(XTENSA_INSN_ILL, XTENSA_GRP_EXCEPTION);
 								break;
 							case 0b10: // JR
 								switch (in24.callx.n)
 								{
 								case 0b00: // RET
+									if (in24.callx.s == 0)
+									{
+										INSN(XTENSA_INSN_RET, XTENSA_GRP_CALL);
+									}
 									break;
 								case 0b01: // RETW
+									if (in24.callx.s == 0)
+									{
+										INSN(XTENSA_INSN_RETW, XTENSA_GRP_CALL);
+									}
 									break;
 								case 0b10: // JX
+									INSN(XTENSA_INSN_JX, XTENSA_GRP_CALL);
+									REGR(in24.callx.s);
 									break;
 								}
+								break;
 							case 0b11: // CALLX
 								switch (in24.callx.n)
 								{
@@ -1207,6 +1235,8 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				switch (in24.call.n)
 				{
 				case 0b00: // J
+					INSN(XTENSA_INSN_J, XTENSA_GRP_CALL);
+					IMMR(18, in24.call.offset);
 					break;
 				case 0b01: // BZ
 					switch (in24.bri12.m)

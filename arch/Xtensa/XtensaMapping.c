@@ -155,7 +155,6 @@ static const char *xtensa_instructions[] =
 	"ipfl",
 	"isync",
 	"j",
-	"j.l",
 	"jx",
 	"l8ui",
 	"l16si",
