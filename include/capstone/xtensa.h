@@ -258,6 +258,7 @@ extern "C"
 		XTENSA_GRP_CONDITIONAL_STORE,
 		XTENSA_GRP_EXCEPTION,
 		XTENSA_GRP_CACHE,
+		XTENSA_GRP_MMU,
 	} xtensa_insn_group;
 
 	typedef enum xtensa_insn

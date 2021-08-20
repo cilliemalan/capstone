@@ -448,24 +448,58 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						switch (in24.rrr.r)
 						{
 						case 0b0011: // RITLB0
+							INSN(XTENSA_INSN_RITLB0, XTENSA_GRP_MMU);
+							REGW(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b0100: // IITLB
+							if (in24.rrr.t == 0)
+							{
+								INSN(XTENSA_INSN_IITLB, XTENSA_GRP_MMU);
+								REGR(in24.rrr.s);
+							}
 							break;
 						case 0b0101: // PITLB
+							INSN(XTENSA_INSN_PITLB, XTENSA_GRP_MMU);
+							REGW(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b0110: // WITLB
+							INSN(XTENSA_INSN_WITLB, XTENSA_GRP_MMU);
+							REGR(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b0111: // RITLB1
+							INSN(XTENSA_INSN_RITLB1, XTENSA_GRP_MMU);
+							REGW(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b1011: // RDTLB0
+							INSN(XTENSA_INSN_RDTLB0, XTENSA_GRP_MMU);
+							REGW(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b1100: // IDTLB
+							if (in24.rrr.t == 0)
+							{
+								INSN(XTENSA_INSN_IDTLB, XTENSA_GRP_MMU);
+								REGR(in24.rrr.s);
+							}
 							break;
 						case 0b1101: // PDTLB
+							INSN(XTENSA_INSN_PDTLB, XTENSA_GRP_MMU);
+							REGW(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b1110: // WDTLB
+							INSN(XTENSA_INSN_WDTLB, XTENSA_GRP_MMU);
+							REGR(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b1111: // RDTLB1
+							INSN(XTENSA_INSN_RDTLB1, XTENSA_GRP_MMU);
+							REGW(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						}
 						break;
