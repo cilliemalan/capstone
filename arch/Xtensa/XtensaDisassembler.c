@@ -33,13 +33,12 @@ typedef union xinsn24
 		uint8_t r : 4;
 		uint8_t imm8 : 8;
 	} rri8;
-	struct rri16
+	struct ri16
 	{
 		uint8_t op0 : 4;
 		uint8_t t : 4;
-		uint8_t s : 4;
-		uint8_t imm16 : 8;
-	} rri16;
+		uint16_t imm16 : 16;
+	} ri16;
 	struct rsr
 	{
 		uint8_t op0 : 4;
@@ -204,8 +203,16 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 			switch (in16.rrrn.op0)
 			{
 			case 0b1000: // L32I.N
+				INSN(XTENSA_INSN_L32I_N, XTENSA_GRP_LOAD);
+				REGW(in16.rrrn.t);
+				REGR(in16.rrrn.s);
+				IMMR(4, in16.rrrn.r * 4);
 				break;
 			case 0b1001: // S32I.N
+				INSN(XTENSA_INSN_S32I_N, XTENSA_GRP_STORE);
+				REGR(in16.rrrn.t);
+				REGR(in16.rrrn.s);
+				IMMR(4, in16.rrrn.r * 4);
 				break;
 			case 0b1010: // ADD.N
 				INSN(XTENSA_INSN_ADD_N, XTENSA_GRP_ARITHMETIC);
@@ -380,19 +387,30 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 								switch (in24.rrr.s)
 								{
 								case 0b0000: // RFE
+									INSN(XTENSA_INSN_RFE, XTENSA_GRP_RET);
 									break;
 								case 0b0001: // RFUE
+									INSN(XTENSA_INSN_RFUE, XTENSA_GRP_RET);
 									break;
 								case 0b0010: // RFDE
+									INSN(XTENSA_INSN_RFDE, XTENSA_GRP_RET);
 									break;
 								case 0b0100: // RFWO
+									INSN(XTENSA_INSN_RFWO, XTENSA_GRP_RET);
 									break;
 								case 0b0101: // RFWU
+									INSN(XTENSA_INSN_RFWU, XTENSA_GRP_RET);
 									break;
 								}
 							case 0b0001: // RFI
+								INSN(XTENSA_INSN_RFI, XTENSA_GRP_RET);
+								IMMR(4, in24.rrr.s);
 								break;
 							case 0b0010: // RFME
+								if (in24.rrr.s == 0)
+								{
+									INSN(XTENSA_INSN_RFME, XTENSA_GRP_RET);
+								}
 								break;
 							}
 							break;
@@ -610,23 +628,43 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						switch (in24.rrr.r)
 						{
 						case 0b0000: // LICT
+							INSN(XTENSA_INSN_LICT, XTENSA_GRP_CACHE);
+							REGW(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b0001: // SICT
+							INSN(XTENSA_INSN_SICT, XTENSA_GRP_CACHE);
+							REGR(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b0010: // LICW
+							INSN(XTENSA_INSN_LICW, XTENSA_GRP_CACHE);
+							REGW(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b0011: // SICW
+							INSN(XTENSA_INSN_SICW, XTENSA_GRP_CACHE);
+							REGR(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b1000: // LDCT
+							INSN(XTENSA_INSN_LDCT, XTENSA_GRP_CACHE);
+							REGW(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b1001: // SDCT
+							INSN(XTENSA_INSN_LDCT, XTENSA_GRP_CACHE);
+							REGR(in24.rrr.t);
+							REGR(in24.rrr.s);
 							break;
 						case 0b1110: // RFDX
 							switch (in24.rrr.t)
 							{
 							case 0b0000: // RFDO
+								INSN(XTENSA_INSN_RFDO, XTENSA_GRP_DEBUG);
 								break;
 							case 0b0001: // RFDD
+								INSN(XTENSA_INSN_RFDD, XTENSA_GRP_DEBUG);
 								break;
 							}
 							break;
@@ -753,8 +791,16 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					switch (in24.rrr.op2)
 					{
 					case 0b0000: // L32E
+						INSN(XTENSA_INSN_L32E, XTENSA_GRP_FLOATING_POINT);
+						REGW(in24.rri4.t);
+						REGR(in24.rri4.s);
+						IMMR(4, (in24.rri4.r * 4) - 64);
 						break;
 					case 0b0100: // S32E
+						INSN(XTENSA_INSN_S32E, XTENSA_GRP_FLOATING_POINT);
+						REGR(in24.rri4.t);
+						REGR(in24.rri4.s);
+						IMMR(4, (in24.rri4.r * 4) - 64);
 						break;
 					}
 					break;
@@ -877,21 +923,48 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				}
 				break;
 			case 0b0001: // L32R
+				INSN(XTENSA_INSN_L8UI, XTENSA_GRP_LOAD);
+				REGW(in24.ri16.t);
+				IMMR(16, in24.ri16.imm16);
 				break;
 			case 0b0010: // LSAI
 				switch (in24.rri4.r)
 				{
 				case 0b0000: // L8UI
+					INSN(XTENSA_INSN_L8UI, XTENSA_GRP_LOAD);
+					REGW(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b0001: // L16UI
+					INSN(XTENSA_INSN_L16UI, XTENSA_GRP_LOAD);
+					REGW(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 << 1);
 					break;
 				case 0b0010: // L32I
+					INSN(XTENSA_INSN_L32I, XTENSA_GRP_LOAD);
+					REGW(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 << 2);
 					break;
 				case 0b0100: // S8I
+					INSN(XTENSA_INSN_S8I, XTENSA_GRP_STORE);
+					REGR(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8);
 					break;
 				case 0b0101: // S16I
+					INSN(XTENSA_INSN_S16I, XTENSA_GRP_STORE);
+					REGR(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 << 1);
 					break;
 				case 0b0110: // S32I
+					INSN(XTENSA_INSN_S32I, XTENSA_GRP_STORE);
+					REGR(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 << 2);
 					break;
 				case 0b0111: // CACHE
 					if (in24.rri4.t < 0b1000)
@@ -987,19 +1060,30 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					}
 					break;
 				case 0b1001: // L16SI
+					INSN(XTENSA_INSN_L16SI, XTENSA_GRP_LOAD);
+					REGW(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 * 2);
 					break;
 				case 0b1010: // MOVI
+					INSN(XTENSA_INSN_MOVI, XTENSA_GRP_MOVE);
+					REGW(in24.rri8.t);
+					IMMR(8, ((in24.rri8.s << 8) | in24.rri8.imm8) - 2048);
 					break;
 				case 0b1011: // L32AI
+					INSN(XTENSA_INSN_L32AI, XTENSA_GRP_LOAD);
+					REGW(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 * 4);
 					break;
 				case 0b1100: // ADDI
-					INSN(XTENSA_INSN_ADDI, XTENSA_GRP_FLOATING_POINT);
+					INSN(XTENSA_INSN_ADDI, XTENSA_GRP_ARITHMETIC);
 					REGW(in24.rri8.t);
 					REGR(in24.rri8.s);
 					IMMR(8, (int8_t)in24.rri8.imm8);
 					break;
 				case 0b1101: // ADDMI
-					INSN(XTENSA_INSN_ADDMI, XTENSA_GRP_FLOATING_POINT);
+					INSN(XTENSA_INSN_ADDMI, XTENSA_GRP_ARITHMETIC);
 					REGW(in24.rri8.t);
 					REGR(in24.rri8.s);
 					IMMR(8, (int8_t)in24.rri8.imm8 << 8);

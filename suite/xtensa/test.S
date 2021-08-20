@@ -198,7 +198,7 @@ clamps	a5,	a5,	10
 clamps	a6,	a9,	21
 clamps	a7,	a10,	22
 
-dsync	
+dsync
 
 # entry	a1,	16
 # entry	a2,	24
@@ -206,8 +206,8 @@ dsync
 # entry	a4,	8000
 # entry	a5,	32760
 
-esync	
-excw	
+esync
+excw
 
 extui	a0,	a13,	4,	16
 extui	a4,	a12,	1,	10
@@ -216,7 +216,7 @@ extui	a6,	a15,	30,	1
 extui	a0,	a9,	0,	10
 extui	a9,	a10,	1,	16
 
-extw	
+extw
 
 float.s	f0,	a15,	0
 float.s	f1,	a14,	1
@@ -248,6 +248,42 @@ isync
 
 _j	0
 _jx	a0
+
+l8ui	a0,	a9,	0
+l8ui	a1,	a8,	1
+l8ui	a2,	a7,	100
+l8ui	a3,	a6,	200
+l8ui	a4,	a5,	255
+
+l16si	a0,	a5,	0
+l16si	a1,	a4,	2
+l16si	a2,	a3,	510
+
+l16ui	a0,	a1,	128
+
+l32ai	a0,	a1,	512
+
+l32e	a0,	a9,	-4
+l32e	a1,	a8,	-8
+l32e	a2,	a7,	-16
+l32e	a3,	a6,	-60
+l32e	a4,	a5,	-64
+
+_l32i	a0,	a15,	0
+_l32i	a1,	a14,	4
+_l32i	a2,	a13,	100
+_l32i	a3,	a12,	1000
+_l32i	a4,	a11,	1020
+
+_l32i.n	a9,	a8,	0
+_l32i.n	a9,	a8,	4
+_l32i.n	a9,	a8,	8
+_l32i.n	a9,	a8,	56
+_l32i.n	a9,	a8,	60
+
+_l32r	a0,	0
+
+# ldct	a0,	a1
 
 _movi.n	a0,	-17
 _movi.n	a1,	-1
