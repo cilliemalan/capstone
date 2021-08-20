@@ -782,12 +782,28 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					switch (in24.rrr.op2)
 					{
 					case 0b0000: // LSX
+						INSN(XTENSA_INSN_LSX, XTENSA_GRP_FLOATING_POINT);
+						RFW(in24.rrr.r);
+						REGR(in24.rrr.s);
+						REGR(in24.rrr.t);
 						break;
 					case 0b0001: // LSXU
+						INSN(XTENSA_INSN_LSX, XTENSA_GRP_FLOATING_POINT);
+						RFW(in24.rrr.r);
+						REGRW(in24.rrr.s);
+						REGR(in24.rrr.t);
 						break;
 					case 0b0100: // SSX
+						INSN(XTENSA_INSN_SSX, XTENSA_GRP_FLOATING_POINT);
+						RFR(in24.rrr.r);
+						REGR(in24.rrr.s);
+						REGR(in24.rrr.t);
 						break;
 					case 0b0101: // SSXU
+						INSN(XTENSA_INSN_SSXU, XTENSA_GRP_FLOATING_POINT);
+						RFR(in24.rrr.r);
+						REGRW(in24.rrr.s);
+						REGR(in24.rrr.t);
 						break;
 					}
 					break;
@@ -1108,12 +1124,28 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				switch (in24.rri8.r)
 				{
 				case 0b0000: // LSI
+					INSN(XTENSA_INSN_LSI, XTENSA_GRP_FLOATING_POINT);
+					RFW(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 * 4);
 					break;
 				case 0b0100: // SSI
+					INSN(XTENSA_INSN_SSI, XTENSA_GRP_FLOATING_POINT);
+					RFR(in24.rri8.t);
+					REGR(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 * 4);
 					break;
 				case 0b1000: // LSIU
+					INSN(XTENSA_INSN_LSIU, XTENSA_GRP_FLOATING_POINT);
+					RFW(in24.rri8.t);
+					REGRW(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 * 4);
 					break;
 				case 0b1100: // SSIU
+					INSN(XTENSA_INSN_SSIU, XTENSA_GRP_FLOATING_POINT);
+					RFR(in24.rri8.t);
+					REGRW(in24.rri8.s);
+					IMMR(8, in24.rri8.imm8 * 4);
 					break;
 				}
 				break;
@@ -1399,10 +1431,19 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 							IMMR(8, in24.rri8.imm8);
 							break;
 						case 0b1000: // LOOP
+							INSN(XTENSA_INSN_LOOP, XTENSA_GRP_LOOP);
+							REGR(in24.rri8.s);
+							IMMR(8, in24.rri8.imm8);
 							break;
 						case 0b1001: // LOOPNEZ
+							INSN(XTENSA_INSN_LOOPNEZ, XTENSA_GRP_BRANCH_RELATIVE);
+							REGR(in24.rri8.s);
+							IMMR(8, in24.rri8.imm8);
 							break;
 						case 0b1010: // LOOPGTZ
+							INSN(XTENSA_INSN_LOOPGTZ, XTENSA_GRP_BRANCH_RELATIVE);
+							REGR(in24.rri8.s);
+							IMMR(8, in24.rri8.imm8);
 							break;
 						}
 						break;

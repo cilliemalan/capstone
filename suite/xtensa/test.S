@@ -2,10 +2,16 @@
 # The output of the disassembler
 # needs to (mostly) match this file.
 #
-# Note: the _ that precedes some instructions
+# The _ that precedes some instructions
 # prevent the compiler from using alternative
 # instructions (such as using movi.n
 # instead of movi or vice-versa).
+#
+# Some of the instructions are commented
+# out either because the assembler does not
+# support them or the assembler cannot generate
+# the instruction in isolation (i.e. it will
+# put a nop before or after the instruction).
 
 abs	a1,	a0
 abs	a0,	a15
@@ -294,6 +300,20 @@ ldinc	m0,	a0
 ldinc	m1,	a1
 ldinc	m2,	a2
 ldinc	m3,	a3
+
+# lict	a0,	a1
+
+# licw	a0,	a1
+
+# _loop	a0,	0
+# _loopgtz	a0,	0
+# _loopnez	a0,	0
+
+lsi	f3,	a3,	100
+# lsiu	f3,	a3,	100
+
+lsx	f5,	a5,	a6
+# lsxu	f5,	a5,	a6
 
 _movi.n	a0,	-17
 _movi.n	a1,	-1
