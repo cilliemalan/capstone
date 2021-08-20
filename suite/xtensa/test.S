@@ -285,6 +285,16 @@ _l32r	a0,	0
 
 # ldct	a0,	a1
 
+lddec	m0,	a0
+lddec	m1,	a1
+lddec	m2,	a2
+lddec	m3,	a3
+
+ldinc	m0,	a0
+ldinc	m1,	a1
+ldinc	m2,	a2
+ldinc	m3,	a3
+
 _movi.n	a0,	-17
 _movi.n	a1,	-1
 _movi.n	a2,	0

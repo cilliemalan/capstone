@@ -57,6 +57,10 @@ static const char *xtensa_registers[] =
 	"b13",
 	"b14",
 	"b15",
+	"m0",
+	"m1",
+	"m2",
+	"m3"
 };
 
 static const char *xtensa_instructions[] =

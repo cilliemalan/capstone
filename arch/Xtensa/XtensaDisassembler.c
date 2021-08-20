@@ -37,7 +37,8 @@ typedef union xinsn24
 	{
 		uint8_t op0 : 4;
 		uint8_t t : 4;
-		uint16_t imm16 : 16;
+		uint8_t imm08 : 8;
+		uint8_t imm816 : 8;
 	} ri16;
 	struct rsr
 	{
@@ -122,7 +123,7 @@ static void add_register(cs_insn *csn, xtensa_reg regnr, uint8_t access)
 		csn->detail->xtensa.operands[c].type = XTENSA_OP_REG;
 		csn->detail->xtensa.operands[c].reg = regnr;
 		csn->detail->xtensa.operands[c].access = access;
-		csn->detail->xtensa.operands[c].size = 4;
+		csn->detail->xtensa.operands[c].size = 32;
 
 		if (access & CS_AC_READ)
 		{
@@ -177,13 +178,16 @@ static uint32_t b4constu(uint8_t x)
 int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						 xtensa_insn *pinsn, cs_insn *csn)
 {
-#define REGR(value) add_register(csn, XTENSA_REG_A0 + value, CS_AC_READ)
-#define REGW(value) add_register(csn, XTENSA_REG_A0 + value, CS_AC_WRITE)
-#define RFR(value) add_register(csn, XTENSA_FP_REG_FR0 + value, CS_AC_READ)
-#define RFW(value) add_register(csn, XTENSA_FP_REG_FR0 + value, CS_AC_WRITE)
-#define RBR(value) add_register(csn, XTENSA_BR_REG_B0 + value, CS_AC_READ)
-#define RBW(value) add_register(csn, XTENSA_BR_REG_B0 + value, CS_AC_WRITE)
-#define IMMR(size, value) add_immediate(csn, value, size, CS_AC_READ)
+#define REGR(value) add_register(csn, XTENSA_REG_A0 + (value), CS_AC_READ)
+#define REGW(value) add_register(csn, XTENSA_REG_A0 + (value), CS_AC_WRITE)
+#define REGRW(value) add_register(csn, XTENSA_REG_A0 + (value), CS_AC_READ | CS_AC_WRITE)
+#define RFR(value) add_register(csn, XTENSA_FP_REG_FR0 + (value), CS_AC_READ)
+#define RFW(value) add_register(csn, XTENSA_FP_REG_FR0 + (value), CS_AC_WRITE)
+#define RBR(value) add_register(csn, XTENSA_BR_REG_B0 + (value), CS_AC_READ)
+#define RBW(value) add_register(csn, XTENSA_BR_REG_B0 + (value), CS_AC_WRITE)
+#define RMR(value) add_register(csn, XTENSA_MR_REG_M0 + (value), CS_AC_READ)
+#define RMW(value) add_register(csn, XTENSA_MR_REG_M0 + (value), CS_AC_WRITE)
+#define IMMR(size, value) add_immediate(csn, (value), size, CS_AC_READ)
 #define INSN(i, a) \
 	insn = i;      \
 	group1 = a;
@@ -923,9 +927,15 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				}
 				break;
 			case 0b0001: // L32R
-				INSN(XTENSA_INSN_L8UI, XTENSA_GRP_LOAD);
+				// TODO: this is the only instruction that
+				// includes an operand that is 16 bits but
+				// not aligned to 16 bits within the structure.
+				// We need to check it but cannot make the
+				// assembler create valid offsets without
+				// linking.
+				INSN(XTENSA_INSN_L32R, XTENSA_GRP_LOAD);
 				REGW(in24.ri16.t);
-				IMMR(16, in24.ri16.imm16);
+				IMMR(16, in24.ri16.imm08 | (in24.ri16.imm816 << 8));
 				break;
 			case 0b0010: // LSAI
 				switch (in24.rri4.r)
@@ -1288,11 +1298,17 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 				case 0b1000:					// MACI
 					if (in24.rrr.op1 == 0b0000) // LDINC
 					{
+						INSN(XTENSA_INSN_LDINC, XTENSA_GRP_MAC16);
+						RMW(in24.rrr.r & 3);
+						REGR(in24.rrr.s);
 					}
 					break;
 				case 0b1001:					// MACC
 					if (in24.rrr.op1 == 0b0000) // LDDEC
 					{
+						INSN(XTENSA_INSN_LDDEC, XTENSA_GRP_MAC16);
+						RMW(in24.rrr.r & 3);
+						REGR(in24.rrr.s);
 					}
 					break;
 				}

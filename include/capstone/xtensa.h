@@ -69,8 +69,9 @@ extern "C"
 		int8_t register_window_movement;
 	} cs_xtensa;
 
-	// Xtensa general purpose and floating
-	// point registers.
+	// Xtensa general purpose registers. These are all the registers
+	// that can appear as general operands. Some of these registers
+	// may be aliased as special registers (e.g. boolean registers).
 	typedef enum xtensa_reg
 	{
 		XTENSA_REG_INVALID = 0,
@@ -128,6 +129,12 @@ extern "C"
 		XTENSA_BR_REG_B13,
 		XTENSA_BR_REG_B14,
 		XTENSA_BR_REG_B15,
+
+		//> MAC16 registers
+		XTENSA_MR_REG_M0,
+		XTENSA_MR_REG_M1,
+		XTENSA_MR_REG_M2,
+		XTENSA_MR_REG_M3,
 	} xtensa_reg;
 
 	typedef enum xtensa_special_reg
