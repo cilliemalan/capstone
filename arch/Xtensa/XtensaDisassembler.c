@@ -503,12 +503,10 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						{
 						case 0b0000: // SSR
 							INSN(XTENSA_INSN_SSR, XTENSA_GRP_BITWISE);
-							RGW(in24.rrr.r);
 							RGR(in24.rrr.s);
 							break;
 						case 0b0001: // SSL
 							INSN(XTENSA_INSN_SSL, XTENSA_GRP_BITWISE);
-							RGW(in24.rrr.r);
 							RGR(in24.rrr.s);
 							break;
 						case 0b0010: // SSA8L
@@ -639,6 +637,11 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						RGR(in24.rrr.t);
 						break;
 					case 0b1100: // SUB
+						INSN(XTENSA_INSN_SUB, XTENSA_GRP_ARITHMETIC);
+						RGW(in24.rrr.r);
+						RGR(in24.rrr.s);
+						RGR(in24.rrr.t);
+						break;
 					case 0b1101: // SUBX2
 					case 0b1110: // SUBX4
 					case 0b1111: // SUBX8
@@ -938,8 +941,8 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 						break;
 					case 0b1111: // WUR
 						INSN(XTENSA_INSN_WUR, XTENSA_GRP_MOVE);
-						RGR(in24.rrr.r);
-						RUW((in24.rrr.s << 4) | in24.rrr.t);
+						RGR(in24.rrr.t);
+						RUW((in24.rrr.r << 4) | in24.rrr.s);
 						break;
 					}
 					break;

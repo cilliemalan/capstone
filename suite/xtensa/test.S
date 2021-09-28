@@ -537,7 +537,7 @@ rsil	a6,	14
 
 # some are commented out since
 # the compiler doesn't seem to know
-# about them.
+# about them or reads are not supported
 rsr.lbeg	a7
 rsr.lend	a7
 rsr.lcount	a7
@@ -711,3 +711,238 @@ srli	a0,	a1,	1
 srli	a0,	a1,	2
 srli	a0,	a1,	14
 srli	a0,	a1,	15
+
+ssa8b	a8
+ssa8l	a8
+
+ssai	0
+ssai	1
+ssai	2
+ssai	10
+ssai	20
+ssai	30
+ssai	31
+
+ssi	f3,	a9,	1000
+# ssiu	f3,	a9,	1000
+
+ssl	a8
+ssr	a8
+
+ssx	f3,	a9,	a4
+# ssxu	f3,	a9,	a4
+
+sub	a0,	a1,	a2
+sub.s	f0,	f1,	f2
+
+subx2	a3,	a1,	a2
+subx4	a1,	a1,	a2
+subx8	a2,	a1,	a2
+
+syscall
+
+trunc.s	a4,	f9,	0
+trunc.s	a4,	f9,	1
+trunc.s	a4,	f9,	15
+
+ueq.s	b7,	f9,	f2
+
+ufloat.s	f3,	a3,	0
+ufloat.s	f3,	a3,	1
+ufloat.s	f3,	a3,	10
+ufloat.s	f3,	a3,	15
+
+ule.s	b7,	f9,	f2
+
+ult.s	b7,	f9,	f2
+
+umul.aa.ll	a0,	a9
+umul.aa.lh	a3,	a10
+umul.aa.hl	a2,	a11
+umul.aa.hh	a1,	a13
+
+un.s	b15,	f9,	f1
+
+utrunc.s	a5,	f15,	0
+utrunc.s	a5,	f15,	1
+utrunc.s	a5,	f15,	15
+
+waiti	0
+waiti	1
+waiti	15
+
+wdtlb	a3,	a1
+
+wer	a0,	a1
+
+wfr	f9,	a15
+
+witlb	a15,	a1
+
+# some are commented out since
+# the compiler doesn't seem to know
+# about them or writes are not supported
+wsr.lbeg	a15
+wsr.lend	a15
+wsr.lcount	a15
+wsr.sar	a15
+wsr.br	a15
+wsr.litbase	a15
+wsr.scompare1	a15
+wsr.acclo	a15
+wsr.acchi	a15
+wsr.m0	a15
+wsr.m1	a15
+wsr.m2	a15
+wsr.m3	a15
+wsr.windowbase	a15
+wsr.windowstart	a15
+# wsr.ptevaddr	a15
+wsr.mmid	a15
+# wsr.rasid	a15
+# wsr.itlbcfg	a15
+# wsr.dtlbcfg	a15
+wsr.ibreakenable	a15
+wsr.atomctl	a15
+wsr.ddr	a15
+# wsr.meps	a15
+# wsr.mepc	a15
+# wsr.mesave	a15
+# wsr.mesr	a15
+# wsr.mecr	a15
+# wsr.mevaddr	a15
+wsr.ibreaka0	a15
+wsr.ibreaka1	a15
+wsr.debugcause	a15
+wsr.dbreaka0	a15
+wsr.dbreaka1	a15
+wsr.dbreakc0	a15
+wsr.dbreakc1	a15
+wsr.epc1	a15
+wsr.epc2	a15
+wsr.epc3	a15
+wsr.epc4	a15
+wsr.epc5	a15
+wsr.epc6	a15
+wsr.epc7	a15
+wsr.depc	a15
+wsr.eps2	a15
+wsr.eps3	a15
+wsr.eps4	a15
+wsr.eps5	a15
+wsr.eps6	a15
+wsr.eps7	a15
+wsr.excsave1	a15
+wsr.excsave2	a15
+wsr.excsave3	a15
+wsr.excsave4	a15
+wsr.excsave5	a15
+wsr.excsave6	a15
+wsr.excsave7	a15
+wsr.cpenable	a15
+# wsr.interrupt	a15
+wsr.intclear	a15
+wsr.intenable	a15
+wsr.ps	a15
+wsr.vecbase	a15
+wsr.exccause	a15
+wsr.ccount	a15
+# wsr.prid	a15
+wsr.icount	a15
+wsr.icountlevel	a15
+wsr.excvaddr	a15
+wsr.ccompare0	a15
+wsr.ccompare1	a15
+wsr.ccompare2	a15
+wsr.misc0	a15
+wsr.misc1	a15
+wsr.misc2	a15
+wsr.misc3	a15
+
+wur.threadptr	a1
+wur.fcr	a7
+wur.fsr	a8
+
+xor	a1,	a4,	a9
+xorb	b1,	b2,	b3
+
+
+# some are commented out since
+# the compiler doesn't seem to know
+# about them or writes and reads are not supported
+xsr.lbeg	a0
+xsr.lend	a0
+xsr.lcount	a0
+xsr.sar	a0
+xsr.br	a0
+xsr.litbase	a0
+xsr.scompare1	a0
+xsr.acclo	a0
+xsr.acchi	a0
+xsr.m0	a0
+xsr.m1	a0
+xsr.m2	a0
+xsr.m3	a0
+xsr.windowbase	a0
+xsr.windowstart	a0
+# xsr.ptevaddr	a0
+# xsr.mmid	a0
+# xsr.rasid	a0
+# xsr.itlbcfg	a0
+# xsr.dtlbcfg	a0
+xsr.ibreakenable	a0
+xsr.atomctl	a0
+xsr.ddr	a0
+# xsr.meps	a0
+# xsr.mepc	a0
+# xsr.mesave	a0
+# xsr.mesr	a0
+# xsr.mecr	a0
+# xsr.mevaddr	a0
+xsr.ibreaka0	a0
+xsr.ibreaka1	a0
+xsr.debugcause	a0
+xsr.dbreaka0	a0
+xsr.dbreaka1	a0
+xsr.dbreakc0	a0
+xsr.dbreakc1	a0
+xsr.epc1	a0
+xsr.epc2	a0
+xsr.epc3	a0
+xsr.epc4	a0
+xsr.epc5	a0
+xsr.epc6	a0
+xsr.epc7	a0
+xsr.depc	a0
+xsr.eps2	a0
+xsr.eps3	a0
+xsr.eps4	a0
+xsr.eps5	a0
+xsr.eps6	a0
+xsr.eps7	a0
+xsr.excsave1	a0
+xsr.excsave2	a0
+xsr.excsave3	a0
+xsr.excsave4	a0
+xsr.excsave5	a0
+xsr.excsave6	a0
+xsr.excsave7	a0
+xsr.cpenable	a0
+# xsr.interrupt	a0
+# xsr.intclear	a0
+xsr.intenable	a0
+xsr.ps	a0
+xsr.vecbase	a0
+xsr.exccause	a0
+xsr.ccount	a0
+# xsr.prid	a0
+xsr.icount	a0
+xsr.icountlevel	a0
+xsr.excvaddr	a0
+xsr.ccompare0	a0
+xsr.ccompare1	a0
+xsr.ccompare2	a0
+xsr.misc0	a0
+xsr.misc1	a0
+xsr.misc2	a0
+xsr.misc3	a0
