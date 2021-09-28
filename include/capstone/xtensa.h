@@ -24,9 +24,10 @@ extern "C"
 		XTENSA_OP_MEM,		   ///< = CS_OP_MEM (Immediate operand).
 							   ///< Note: Xtensa doesn't have memory operands.
 		XTENSA_OP_FP,		   ///< = CS_OP_FP (Immediate operand).
-		XTENSA_OP_SYSREG,	   ///< = XTENSA_OP_SYSREG (System register operand).
+		XTENSA_OP_SYSREG,	   ///< = XTENSA_OP_SYSREG (Special register operand).
 		XTENSA_OP_USERREG,	   ///< = XTENSA_OP_USERREG (User register operand).
 		XTENSA_OP_BOOLREG,	   ///< = XTENSA_OP_BOOLREG (Boolean register operand).
+		XTENSA_OP_MACREG,	   ///< = XTENSA_OP_MACREG (MAC16 register operand).
 	} xtensa_op_type;
 
 	// Instruction operand

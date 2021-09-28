@@ -365,3 +365,316 @@ _movi.n	a2,	0
 _movi.n	a3,	10
 _movi.n	a4,	95
 _movi.n	a5,	-32
+
+movltz	a0,	a1,	a2
+movltz.s	f0,	f1,	a2
+
+movnez	a0,	a1,	a2
+movnez.s	f0,	f1,	a2
+
+movsp	a0,	a1
+
+movt	a0,	a1,	b4
+movt.s	f0,	f1,	b1
+
+msub.s	f0,	f1,	f2
+
+mul.aa.ll	a0,	a10
+mul.aa.hl	a3,	a11
+mul.aa.lh	a9,	a12
+mul.aa.hh	a3,	a15
+mul.ad.ll	a0,	m2
+mul.ad.hl	a3,	m3
+mul.ad.lh	a9,	m2
+mul.ad.hh	a3,	m3
+mul.da.ll	m0,	a10
+mul.da.hl	m1,	a11
+mul.da.lh	m1,	a12
+mul.da.hh	m0,	a15
+mul.dd.ll	m1,	m3
+mul.dd.hl	m0,	m2
+mul.dd.lh	m0,	m2
+mul.dd.hh	m1,	m3
+
+mul.s	f0,	f1,	f2
+
+mul16s	a0,	a1,	a2
+mul16u	a0,	a1,	a2
+
+
+mula.aa.ll	a0,	a10
+mula.aa.hl	a3,	a11
+mula.aa.lh	a9,	a12
+mula.aa.hh	a3,	a15
+mula.ad.ll	a0,	m2
+mula.ad.hl	a3,	m3
+mula.ad.lh	a9,	m2
+mula.ad.hh	a3,	m3
+mula.da.ll	m0,	a10
+mula.da.hl	m1,	a11
+mula.da.lh	m1,	a12
+mula.da.hh	m0,	a15
+mula.dd.ll	m1,	m3
+mula.dd.hl	m0,	m2
+mula.dd.lh	m0,	m2
+mula.dd.hh	m1,	m3
+
+mula.da.ll.lddec	m0,	a10,	m1,	a1
+mula.da.hl.lddec	m1,	a11,	m0,	a8
+mula.da.lh.lddec	m2,	a12,	m1,	a2
+mula.da.hh.lddec	m3,	a15,	m0,	a7
+mula.da.ll.ldinc	m0,	a10,	m0,	a3
+mula.da.hl.ldinc	m1,	a11,	m0,	a6
+mula.da.lh.ldinc	m2,	a12,	m1,	a4
+mula.da.hh.ldinc	m3,	a15,	m0,	a5
+
+mula.dd.ll.lddec	m0,	a0,	m0,	m2
+mula.dd.hl.lddec	m1,	a1,	m1,	m3
+mula.dd.lh.lddec	m2,	a2,	m1,	m2
+mula.dd.hh.lddec	m3,	a3,	m0,	m2
+mula.dd.ll.ldinc	m0,	a4,	m0,	m3
+mula.dd.hl.ldinc	m1,	a5,	m1,	m2
+mula.dd.lh.ldinc	m2,	a6,	m0,	m3
+mula.dd.hh.ldinc	m3,	a7,	m1,	m3
+
+mull	a0,	a1,	a2
+
+muls.aa.ll	a0,	a10
+muls.aa.hl	a3,	a11
+muls.aa.lh	a9,	a12
+muls.aa.hh	a3,	a15
+muls.ad.ll	a0,	m2
+muls.ad.hl	a3,	m3
+muls.ad.lh	a9,	m2
+muls.ad.hh	a3,	m3
+muls.da.ll	m0,	a10
+muls.da.hl	m1,	a11
+muls.da.lh	m1,	a12
+muls.da.hh	m0,	a15
+muls.dd.ll	m1,	m3
+muls.dd.hl	m0,	m2
+muls.dd.lh	m0,	m2
+muls.dd.hh	m1,	m3
+
+mulsh	a10,	a11,	a12
+muluh	a10,	a11,	a12
+
+neg	a10,	a11
+
+neg.s	f1,	f9
+
+_nop
+
+_nop.n
+
+nsa	a10,	a11
+nsau	a10,	a11
+
+oeq.s	b11,	f7,	f3
+ole.s	b1,	f1,	f8
+olt.s	b5,	f11,	f13
+
+or	a0,	a1,	a3
+orb	b0,	b1,	b2
+orbc	b5,	b6,	b7
+
+pdtlb	a13,	a11
+
+pitlb	a13,	a11
+
+quos	a1,	a2,	a3
+quou	a7,	a8,	a9
+
+rdtlb0	a7,	a6
+rdtlb1	a3,	a4
+
+rems	a1,	a2,	a3
+remu	a1,	a2,	a3
+rer	a0,	a0
+
+_ret
+_ret.n
+_retw
+_retw.n
+
+rfdd
+rfde
+# note: the next isntruction takes an operand
+# but not according to the reference manual
+rfdo	15
+rfe
+
+rfi	0
+rfi	7
+rfi	1
+rfi	15
+
+# compiler doesn't know this one
+# rfme
+
+rfr	a1,	f9
+
+# compiler doesn't know this one
+# rfue
+
+rfwo
+rfwu
+
+ritlb0	a3,	a4
+ritlb1	a3,	a4
+
+rotw	-8
+rotw	-1
+rotw	0
+rotw	1
+rotw	7
+
+round.s	a3,	f6,	0
+round.s	a11,	f9,	15
+
+rsil	a1,	0
+rsil	a6,	14
+
+# some are commented out since
+# the compiler doesn't seem to know
+# about them.
+rsr.lbeg	a7
+rsr.lend	a7
+rsr.lcount	a7
+rsr.sar	a7
+rsr.br	a7
+rsr.litbase	a7
+rsr.scompare1	a7
+rsr.acclo	a7
+rsr.acchi	a7
+rsr.m0	a7
+rsr.m1	a7
+rsr.m2	a7
+rsr.m3	a7
+rsr.windowbase	a7
+rsr.windowstart	a7
+# rsr.ptevaddr	a7
+# rsr.mmid	a7
+# rsr.rasid	a7
+# rsr.itlbcfg	a7
+# rsr.dtlbcfg	a7
+rsr.ibreakenable	a7
+rsr.atomctl	a7
+rsr.ddr	a7
+# rsr.meps	a7
+# rsr.mepc	a7
+# rsr.mesave	a7
+# rsr.mesr	a7
+# rsr.mecr	a7
+# rsr.mevaddr	a7
+rsr.ibreaka0	a7
+rsr.ibreaka1	a7
+rsr.debugcause	a7
+rsr.dbreaka0	a7
+rsr.dbreaka1	a7
+rsr.dbreakc0	a7
+rsr.dbreakc1	a7
+rsr.epc1	a7
+rsr.epc2	a7
+rsr.epc3	a7
+rsr.epc4	a7
+rsr.epc5	a7
+rsr.epc6	a7
+rsr.epc7	a7
+rsr.depc	a7
+rsr.eps2	a7
+rsr.eps3	a7
+rsr.eps4	a7
+rsr.eps5	a7
+rsr.eps6	a7
+rsr.eps7	a7
+rsr.excsave1	a7
+rsr.excsave2	a7
+rsr.excsave3	a7
+rsr.excsave4	a7
+rsr.excsave5	a7
+rsr.excsave6	a7
+rsr.excsave7	a7
+rsr.cpenable	a7
+rsr.interrupt	a7
+# rsr.intclear	a7
+rsr.intenable	a7
+rsr.ps	a7
+rsr.vecbase	a7
+rsr.exccause	a7
+rsr.ccount	a7
+rsr.prid	a7
+rsr.icount	a7
+rsr.icountlevel	a7
+rsr.excvaddr	a7
+rsr.ccompare0	a7
+rsr.ccompare1	a7
+rsr.ccompare2	a7
+rsr.misc0	a7
+rsr.misc1	a7
+rsr.misc2	a7
+rsr.misc3	a7
+
+rsync
+
+rur.threadptr	a1
+rur.fcr	a7
+rur.fsr	a8
+
+s8i	a0,	a1,	0
+s8i	a1,	a2,	1
+s8i	a4,	a3,	100
+s8i	a7,	a4,	200
+s8i	a9,	a5,	250
+s8i	a2,	a6,	255
+
+s16i	a0,	a1,	0
+s16i	a1,	a2,	2
+s16i	a4,	a3,	4
+s16i	a7,	a4,	250
+s16i	a9,	a5,	500
+s16i	a2,	a6,	510
+
+s32c1i	a0,	a1,	0
+s32c1i	a1,	a2,	4
+s32c1i	a4,	a3,	8
+s32c1i	a7,	a4,	500
+s32c1i	a9,	a5,	1000
+s32c1i	a2,	a6,	1020
+
+s32e	a1,	a1,	-64
+s32e	a2,	a0,	-20
+s32e	a3,	a1,	-8
+s32e	a4,	a0,	-4
+
+_s32i	a0,	a1,	0
+_s32i	a1,	a2,	4
+_s32i	a4,	a3,	8
+_s32i	a7,	a4,	500
+_s32i	a9,	a5,	1000
+_s32i	a2,	a6,	1020
+
+_s32i.n	a0,	a1,	0
+_s32i.n	a1,	a2,	4
+_s32i.n	a2,	a3,	20
+_s32i.n	a3,	a4,	60
+
+
+s32ri	a0,	a1,	0
+s32ri	a1,	a2,	4
+s32ri	a4,	a3,	8
+s32ri	a7,	a4,	500
+s32ri	a9,	a5,	1000
+s32ri	a2,	a6,	1020
+
+# sdct	a0,	a1
+
+sext	a0,	a1,	7
+sext	a0,	a1,	8
+sext	a0,	a1,	9
+sext	a10,	a1,	10
+sext	a0,	a1,	11
+sext	a10,	a1,	12
+sext	a0,	a1,	20
+sext	a10,	a11,	21
+sext	a0,	a7,	22

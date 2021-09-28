@@ -217,10 +217,6 @@ static const char *xtensa_instructions[] =
 	"mul.da.hl",
 	"mul.da.lh",
 	"mul.da.hh",
-	"mul.da.ll",
-	"mul.da.hl",
-	"mul.da.lh",
-	"mul.da.hh",
 	"mul.dd.ll",
 	"mul.dd.hl",
 	"mul.dd.lh",
@@ -240,22 +236,26 @@ static const char *xtensa_instructions[] =
 	"mula.da.hl",
 	"mula.da.lh",
 	"mula.da.hh",
-	"mula.da.lllddec",
-	"mula.da.hllddec",
-	"mula.da.lhlddec",
-	"mula.da.hhlddec",
+	"mula.da.ll.lddec",
+	"mula.da.hl.lddec",
+	"mula.da.lh.lddec",
+	"mula.da.hh.lddec",
+	"mula.da.ll.ldinc",
+	"mula.da.hl.ldinc",
+	"mula.da.lh.ldinc",
+	"mula.da.hh.ldinc",
 	"mula.dd.ll",
 	"mula.dd.hl",
 	"mula.dd.lh",
 	"mula.dd.hh",
-	"mula.dd.lllddec",
-	"mula.dd.hllddec",
-	"mula.dd.lhlddec",
-	"mula.dd.hhlddec",
-	"mula.dd.llldinc",
-	"mula.dd.hlldinc",
-	"mula.dd.lhldinc",
-	"mula.dd.hhldinc",
+	"mula.dd.ll.lddec",
+	"mula.dd.hl.lddec",
+	"mula.dd.lh.lddec",
+	"mula.dd.hh.lddec",
+	"mula.dd.ll.ldinc",
+	"mula.dd.hl.ldinc",
+	"mula.dd.lh.ldinc",
+	"mula.dd.hh.ldinc",
 	"mull",
 	"muls.aa.ll",
 	"muls.aa.hl",
@@ -286,7 +286,7 @@ static const char *xtensa_instructions[] =
 	"olt.s",
 	"or",
 	"orb",
-	"orbs",
+	"orbc",
 	"pdtlb",
 	"pitlb",
 	"quos",
@@ -436,10 +436,10 @@ const char *Xtensa_sysreg_name(csh handle, unsigned int id)
 	case XTENSA_SPECIAL_REG_SCOMPARE1: return "scompare1";
 	case XTENSA_SPECIAL_REG_ACCLO: return "acclo";
 	case XTENSA_SPECIAL_REG_ACCHI: return "acchi";
-	case XTENSA_SPECIAL_REG_MR0: return "mr0";
-	case XTENSA_SPECIAL_REG_MR1: return "mr1";
-	case XTENSA_SPECIAL_REG_MR2: return "mr2";
-	case XTENSA_SPECIAL_REG_MR3: return "mr3";
+	case XTENSA_SPECIAL_REG_MR0: return "m0";
+	case XTENSA_SPECIAL_REG_MR1: return "m1";
+	case XTENSA_SPECIAL_REG_MR2: return "m2";
+	case XTENSA_SPECIAL_REG_MR3: return "m3";
 	case XTENSA_SPECIAL_REG_WINDOWBASE: return "windowbase";
 	case XTENSA_SPECIAL_REG_WINDOWSTART: return "windowstart";
 	case XTENSA_SPECIAL_REG_PTEVADDR: return "ptevaddr";
