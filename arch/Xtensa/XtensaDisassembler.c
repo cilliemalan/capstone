@@ -190,6 +190,7 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 #define RMW(value) add_register_operand(csn, XTENSA_OP_MACREG, XTENSA_MR_REG_M0 + (value), CS_AC_WRITE, 32)
 #define RSR(value) add_register_operand(csn, XTENSA_OP_SYSREG, XTENSA_SPECIAL_REG_LBEG + (value), CS_AC_READ, 32)
 #define RSW(value) add_register_operand(csn, XTENSA_OP_SYSREG, XTENSA_SPECIAL_REG_LBEG + (value), CS_AC_WRITE, 32)
+#define RSRW(value) add_register_operand(csn, XTENSA_OP_SYSREG, XTENSA_SPECIAL_REG_LBEG + (value), CS_AC_READ | CS_AC_WRITE, 32)
 #define RUR(value) add_register_operand(csn, XTENSA_OP_USERREG, XTENSA_USER_REG_INVALID + 1 + (value), CS_AC_READ, 32)
 #define RUW(value) add_register_operand(csn, XTENSA_OP_USERREG, XTENSA_USER_REG_INVALID + 1 + (value), CS_AC_WRITE, 32)
 #define IMMR(size, value) add_immediate_operand(csn, (value), size, CS_AC_READ)
@@ -439,7 +440,14 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 							IMMR(4, in24.rrr.t);
 							break;
 						case 0b0101: // SYSCALL
-							INSN(XTENSA_INSN_SYSCALL, XTENSA_GRP_EXCEPTION);
+							if (in24.rrr.s == 0)
+							{
+								INSN(XTENSA_INSN_SYSCALL, XTENSA_GRP_EXCEPTION);
+							}
+							else if (in24.rrr.s == 1)
+							{
+								INSN(XTENSA_INSN_SIMCALL, XTENSA_GRP_EXCEPTION);
+							}
 							break;
 						case 0b0110: // RSIL
 							INSN(XTENSA_INSN_RSIL, XTENSA_GRP_INT);
@@ -647,15 +655,31 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					{
 					case 0b0000:
 					case 0b0001: // SLLI
+						INSN(XTENSA_INSN_SLLI, XTENSA_GRP_ARITHMETIC);
+						RGW(in24.rrr.r);
+						RGR(in24.rrr.s);
+						IMMR(5, 32 - (in24.rrr.t | ((in24.rrr.op2 & 0b1) << 4)));
 						break;
 					case 0b0010:
 					case 0b0011: // SRAI
+						INSN(XTENSA_INSN_SRAI, XTENSA_GRP_ARITHMETIC);
+						RGW(in24.rrr.r);
+						RGR(in24.rrr.t);
+						IMMR(5, in24.rrr.s | ((in24.rrr.op2 & 0b1) << 4));
 						break;
 					case 0b0100: // SRLI
+						INSN(XTENSA_INSN_SRLI, XTENSA_GRP_ARITHMETIC);
+						RGW(in24.rrr.r);
+						RGR(in24.rrr.t);
+						IMMR(4, in24.rrr.s);
 						break;
 					case 0b0110: // XSR
+						INSN(XTENSA_INSN_XSR, XTENSA_GRP_MOVE);
+						RGRW(in24.rsr.t);
+						RSRW((in24.rsr.r << 4) | in24.rsr.s);
 						break;
 					case 0b0111: // ACCER
+						// what is this??
 						switch (in24.rrr.op2)
 						{
 						case 0b0000: // RER
@@ -672,19 +696,16 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 					case 0b1001: // SRL
 						INSN(XTENSA_INSN_SRL, XTENSA_GRP_ARITHMETIC);
 						RGW(in24.rrr.r);
-						RGR(in24.rrr.s);
 						RGR(in24.rrr.t);
 						break;
 					case 0b1010: // SLL
 						INSN(XTENSA_INSN_SLL, XTENSA_GRP_ARITHMETIC);
 						RGW(in24.rrr.r);
 						RGR(in24.rrr.s);
-						RGR(in24.rrr.t);
 						break;
 					case 0b1011: // SRA
 						INSN(XTENSA_INSN_SRA, XTENSA_GRP_ARITHMETIC);
 						RGW(in24.rrr.r);
-						RGR(in24.rrr.s);
 						RGR(in24.rrr.t);
 						break;
 					case 0b1100: // MUL16U

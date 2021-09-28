@@ -678,3 +678,36 @@ sext	a10,	a1,	12
 sext	a0,	a1,	20
 sext	a10,	a11,	21
 sext	a0,	a7,	22
+
+# sict	a0,	a1
+# sicw	a5,	a7
+
+simcall
+
+sll	a0,	a1
+
+slli	a0,	a1,	1
+slli	a0,	a1,	2
+slli	a0,	a1,	11
+slli	a0,	a1,	22
+slli	a0,	a1,	30
+slli	a0,	a1,	31
+
+sra	a0,	a1
+
+srai	a0,	a1,	1
+srai	a0,	a1,	2
+srai	a0,	a1,	11
+srai	a0,	a1,	22
+srai	a0,	a1,	30
+srai	a0,	a1,	31
+
+src	a0,	a1,	a2
+
+srl	a0,	a1
+
+srli	a0,	a1,	0
+srli	a0,	a1,	1
+srli	a0,	a1,	2
+srli	a0,	a1,	14
+srli	a0,	a1,	15

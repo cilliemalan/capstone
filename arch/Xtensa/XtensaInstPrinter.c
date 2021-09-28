@@ -34,7 +34,7 @@ void Xtensa_printInst(MCInst *MI, SStream *O, void *info)
 	SStream_concat(O, "%s", Xtensa_insn_name((csh)MI->csh, MI->Opcode));
 	const cs_xtensa *xt = &MI->flat_insn->detail->xtensa;
 
-	if ((MI->Opcode == XTENSA_INSN_RSR || MI->Opcode == XTENSA_INSN_WSR) && xt->op_count == 2)
+	if ((MI->Opcode == XTENSA_INSN_RSR || MI->Opcode == XTENSA_INSN_WSR || MI->Opcode == XTENSA_INSN_XSR) && xt->op_count == 2)
 	{
 		SStream_concat(O, ".%s\t", Xtensa_sysreg_name((csh)MI->csh, xt->operands[1].reg));
 		print_operand(MI, O, info, &xt->operands[0]);
