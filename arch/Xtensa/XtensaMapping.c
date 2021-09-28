@@ -281,7 +281,7 @@ static const char *xtensa_instructions[] =
 	"nop.n",
 	"nsa",
 	"nsau",
-	"qeq.s",
+	"oeq.s",
 	"ole.s",
 	"olt.s",
 	"or",

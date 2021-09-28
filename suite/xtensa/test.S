@@ -206,6 +206,7 @@ clamps	a7,	a10,	22
 
 dsync
 
+# These instructions don't assemble correctly
 # entry	a1,	16
 # entry	a2,	24
 # entry	a3,	32
@@ -234,6 +235,7 @@ floor.s	a15,	f1,	15
 
 idtlb	a0
 
+# The compiler doesn't know these instructions
 # iiu	a0,	0
 # iiu	a1,	4
 # iiu	a15,	240
@@ -289,6 +291,7 @@ _l32i.n	a9,	a8,	60
 
 _l32r	a0,	0
 
+# The compiler doesn't know this instruction
 # ldct	a0,	a1
 
 lddec	m0,	a0
@@ -301,19 +304,60 @@ ldinc	m1,	a1
 ldinc	m2,	a2
 ldinc	m3,	a3
 
+# The compiler doesn't know these instructions
 # lict	a0,	a1
-
 # licw	a0,	a1
 
+# the loop instrutions don't assemble correctly
 # _loop	a0,	0
 # _loopgtz	a0,	0
 # _loopnez	a0,	0
 
 lsi	f3,	a3,	100
+# The compiler doesn't know this instruction
 # lsiu	f3,	a3,	100
 
 lsx	f5,	a5,	a6
+# The compiler doesn't know this instruction
 # lsxu	f5,	a5,	a6
+
+madd.s	f0,	f0,	f0
+madd.s	f1,	f2,	f3
+
+max	a0,	a1,	a2
+maxu	a0,	a1,	a2
+
+memw
+
+min	a0,	a1,	a2
+minu	a0,	a1,	a2
+
+_mov.n	a0,	a15
+_mov.n	a7,	a8
+
+mov.s	f0,	f1
+mov.s	f15,	f2
+
+moveqz	a0,	a1,	a2
+moveqz	a15,	a14,	a13
+
+moveqz.s	f0,	f1,	a2
+
+movf	a0,	a1,	b4
+movf.s	f0,	f1,	b1
+
+movgez	a0,	a1,	a2
+movgez	a15,	a14,	a13
+
+movgez.s	f0,	f1,	a2
+
+_movi	a0,	0
+_movi	a1,	100
+_movi	a2,	-100
+_movi	a3,	-2000
+_movi	a4,	2000
+_movi	a5,	-2048
+_movi	a6,	2047
 
 _movi.n	a0,	-17
 _movi.n	a1,	-1
