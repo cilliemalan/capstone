@@ -176,8 +176,7 @@ static uint32_t b4constu(uint8_t x)
 											  : 0;
 }
 
-int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
-						 xtensa_insn *pinsn, cs_insn *csn)
+static int disassemble_internal(csh ud, const uint8_t *code, size_t code_len, xtensa_insn *pinsn, cs_insn *csn)
 {
 #define RGR(value) add_register_operand(csn, XTENSA_OP_REG, XTENSA_REG_A0 + (value), CS_AC_READ, 32)
 #define RGW(value) add_register_operand(csn, XTENSA_OP_REG, XTENSA_REG_A0 + (value), CS_AC_WRITE, 32)
@@ -202,7 +201,7 @@ int disassemble_internal(csh ud, const uint8_t *code, size_t code_len,
 	xtensa_insn_group group2 = XTENSA_GRP_INVALID;
 	xtensa_insn_group group3 = XTENSA_GRP_INVALID;
 	xtensa_insn insn = XTENSA_INSN_INVALID;
-	int size;
+	int size = 0;
 	if (code_len >= 2)
 	{
 		if (code[0] & 0b1000)
@@ -1791,7 +1790,10 @@ bool Xtensa_getInstruction(csh ud, const uint8_t *code, size_t code_len, MCInst 
 	if (insnbytes > 0)
 	{
 		mi->address = address;
-		*size = insnbytes;
+		if (size)
+		{
+			*size = insnbytes;
+		}
 		mi->flat_insn->id = instruction;
 		mi->OpcodePub = instruction;
 		mi->Opcode = instruction;
