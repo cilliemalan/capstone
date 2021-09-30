@@ -616,6 +616,12 @@ if (CAPSTONE_BUILD_SHARED)
     endif ()
 endif ()
 
+if (CAPSTONE_BUILD_WEBASSEMBLY)
+    add_executable(capstone-wasm ${ALL_SOURCES} ${ALL_HEADERS} bindings/webassembly/main.c)
+    set_property(TARGET capstone-wasm PROPERTY OUTPUT_NAME capstone.wasm)
+    set_property(TARGET capstone-wasm PROPERTY COMPILE_FLAGS -DCAPSTONE_SHARED)
+endif ()
+
 if (CAPSTONE_BUILD_TESTS)
     foreach (TSRC ${TEST_SOURCES})
         STRING(REGEX REPLACE ".c$" "" TBIN ${TSRC})
